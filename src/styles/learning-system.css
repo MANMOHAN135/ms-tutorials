@@ -1,0 +1,399 @@
+/* ==========================================================================
+   MS Tutorials — Learning System Page Styles (Phase 4.4)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Hero Section
+   -------------------------------------------------------------------------- */
+.ls-hero {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5FBF9 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ls-hero__grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.ls-hero__title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-4);
+}
+
+.ls-hero__title span {
+  color: var(--primary);
+}
+
+.ls-hero__description {
+  font-size: var(--font-size-lg);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-8);
+  max-width: 600px;
+}
+
+.ls-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* --------------------------------------------------------------------------
+   2. The Six-Step Learning Cycle (Centerpiece)
+   -------------------------------------------------------------------------- */
+.ls-cycle-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-6);
+  position: relative;
+  margin-top: var(--space-8);
+}
+
+.ls-cycle-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-top: 4px solid var(--primary);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.ls-cycle-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: #B4ECE5;
+}
+
+.ls-cycle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  background-color: var(--light-teal);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-3);
+  align-self: flex-start;
+}
+
+.ls-cycle-card__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.ls-cycle-card__quote {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--dark-teal);
+  margin-bottom: var(--space-3);
+  font-style: italic;
+}
+
+.ls-cycle-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-4);
+}
+
+.ls-cycle-card__points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--border-color);
+}
+
+.ls-cycle-card__point {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--navy);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Loop indicator at the end of 6 steps */
+.ls-cycle-return-banner {
+  background-color: var(--white);
+  border: 2px dashed #B4ECE5;
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  margin-top: var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  text-align: center;
+  color: var(--navy);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* --------------------------------------------------------------------------
+   3. Practice Progression Pipeline
+   -------------------------------------------------------------------------- */
+.ls-pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.ls-pipeline-step {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.ls-pipeline-step__num {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+}
+
+.ls-pipeline-step__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.ls-pipeline-step__desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. Strengths & Gaps (3-Part Visual)
+   -------------------------------------------------------------------------- */
+.ls-triad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.ls-triad-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.ls-triad-card--strength {
+  border-top: 4px solid var(--success);
+}
+
+.ls-triad-card--gap {
+  border-top: 4px solid var(--warning);
+}
+
+.ls-triad-card--action {
+  border-top: 4px solid var(--primary);
+}
+
+.ls-triad-card__tag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+  display: block;
+}
+
+.ls-triad-card__question {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-3);
+  line-height: var(--line-height-snug);
+}
+
+.ls-triad-card__text {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   5. Participant Progressions (Teacher, Student, Parent)
+   -------------------------------------------------------------------------- */
+.ls-progression-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-top: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.ls-progression-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+}
+
+.ls-progression-step__badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--light-teal);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.ls-progression-divider {
+  color: var(--text-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   6. Complete System Summary Card
+   -------------------------------------------------------------------------- */
+.ls-system-summary-card {
+  background: linear-gradient(135deg, var(--navy) 0%, #153A68 100%);
+  color: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-12) var(--space-8);
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+}
+
+.ls-system-summary-card h3 {
+  color: var(--white);
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-3);
+}
+
+.ls-system-summary-card p {
+  color: #CBD5E1;
+  font-size: var(--font-size-base);
+  max-width: 680px;
+  margin: 0 auto var(--space-8);
+  line-height: var(--line-height-relaxed);
+}
+
+.ls-layers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  max-width: 960px;
+  margin: 0 auto var(--space-8);
+}
+
+.ls-layer-item {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ls-layer-item__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--white);
+}
+
+.ls-layer-item__desc {
+  font-size: var(--font-size-xs);
+  color: #94A3B8;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ls-cycle-card,
+  .about-purpose-card,
+  .program-detail-card {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Media Queries
+   -------------------------------------------------------------------------- */
+@media (max-width: 992px) {
+  .ls-hero__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .ls-hero__title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .ls-progression-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .ls-progression-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .ls-hero__title {
+    font-size: 1.875rem;
+  }
+
+  .ls-hero__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .ls-hero__actions .mst-btn {
+    width: 100%;
+  }
+}
