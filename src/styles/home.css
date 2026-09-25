@@ -1,0 +1,654 @@
+/* ==========================================================================
+   MS Tutorials — Home Page Styles (Phase 4.1)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Section Layout & Alternating Backgrounds
+   -------------------------------------------------------------------------- */
+.home-section {
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-16);
+  position: relative;
+}
+
+.home-section--white {
+  background-color: var(--white);
+}
+
+.home-section--subtle {
+  background-color: var(--bg-subtle);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.home-section--tinted {
+  background-color: #F4FAF9;
+  border-top: 1px solid #D1EBE7;
+  border-bottom: 1px solid #D1EBE7;
+}
+
+.home-section--dark {
+  background-color: var(--dark-bg);
+  color: #CBD5E1;
+}
+
+/* --------------------------------------------------------------------------
+   1. Hero Section
+   -------------------------------------------------------------------------- */
+.home-hero {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F6FBFA 100%);
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.home-hero__grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.home-hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.home-hero__eyebrow {
+  margin-bottom: var(--space-3);
+}
+
+.home-hero__title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-4);
+}
+
+.home-hero__title span {
+  color: var(--primary);
+}
+
+.home-hero__description {
+  font-size: var(--font-size-lg);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-8);
+  max-width: 580px;
+}
+
+.home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+
+.home-hero__highlights {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--navy);
+  font-weight: var(--font-weight-medium);
+  flex-wrap: wrap;
+}
+
+.home-hero__highlight-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Educational CSS Illustration Visual */
+.home-hero__visual {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.hero-visual-card {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-visual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.hero-visual-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.hero-visual-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+}
+.hero-visual-dot--primary { background-color: var(--primary); }
+.hero-visual-dot--gold { background-color: var(--gold); }
+.hero-visual-dot--navy { background-color: var(--navy); }
+
+.hero-concept-matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.hero-concept-box {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.hero-concept-box--active {
+  background-color: var(--light-teal);
+  border-color: #B4ECE5;
+}
+
+.hero-concept-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--font-weight-semibold);
+}
+
+.hero-concept-val {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  font-family: var(--font-heading);
+}
+
+.hero-diagnostic-preview {
+  background: linear-gradient(135deg, #0B2545 0%, #1A3E6D 100%);
+  color: var(--white);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* --------------------------------------------------------------------------
+   2. Trust / Value Strip
+   -------------------------------------------------------------------------- */
+.home-trust-strip {
+  background-color: var(--white);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-6) 0;
+}
+
+.home-trust-strip__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.home-trust-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.home-trust-item__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background-color: var(--light-teal);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.home-trust-item__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin: 0;
+}
+
+.home-trust-item__desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. "More Than Tuition"
+   -------------------------------------------------------------------------- */
+.home-philosophy__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+.home-philosophy__points {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.home-philosophy-point {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.home-philosophy-point__icon {
+  color: var(--primary);
+  margin-bottom: var(--space-2);
+}
+
+.home-philosophy-point__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  margin-bottom: var(--space-1);
+}
+
+.home-philosophy-point__text {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. Programs Grid
+   -------------------------------------------------------------------------- */
+.home-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+.program-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+}
+
+.program-card-desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+.program-features-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--border-color);
+}
+
+.program-features-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--navy);
+  font-weight: var(--font-weight-medium);
+}
+
+/* --------------------------------------------------------------------------
+   5. How Learning Works (6-Step Cycle)
+   -------------------------------------------------------------------------- */
+.home-cycle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+.home-cycle-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.home-cycle-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #B4ECE5;
+}
+
+.home-cycle-number {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  background-color: var(--light-teal);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  display: inline-block;
+  margin-bottom: var(--space-3);
+}
+
+.home-cycle-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.home-cycle-desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. Digital Resources Grid
+   -------------------------------------------------------------------------- */
+.home-resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.home-resource-tile {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: border-color var(--transition-normal);
+}
+
+.home-resource-tile:hover {
+  border-color: var(--primary);
+}
+
+.home-resource-tile__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background-color: var(--light-teal);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-2);
+}
+
+.home-resource-tile__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  margin: 0;
+}
+
+.home-resource-tile__text {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   7. Assessment / Know Where You Stand
+   -------------------------------------------------------------------------- */
+.home-assessment-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, #153A68 100%);
+  border-radius: var(--radius-lg);
+  color: var(--white);
+  padding: var(--space-10) var(--space-8);
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.home-assessment-banner h3 {
+  color: var(--white);
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-3);
+}
+
+.home-assessment-banner p {
+  color: #CBD5E1;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-6);
+}
+
+.home-assessment-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.home-assessment-feature-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--white);
+  font-weight: var(--font-weight-medium);
+}
+
+/* --------------------------------------------------------------------------
+   8. Why MS Tutorials Differentiator Grid
+   -------------------------------------------------------------------------- */
+.home-why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+.home-why-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  border-left: 4px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.home-why-card h4 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.home-why-card p {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   9. Student / Parent Portal Entry Cards
+   -------------------------------------------------------------------------- */
+.home-portals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+.portal-entry-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.portal-entry-card--student {
+  border-top: 4px solid var(--primary);
+}
+
+.portal-entry-card--parent {
+  border-top: 4px solid var(--gold);
+}
+
+.portal-entry-card__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin: 0;
+}
+
+.portal-entry-card__desc {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   10. Final CTA
+   -------------------------------------------------------------------------- */
+.home-final-cta {
+  background: linear-gradient(135deg, var(--dark-bg) 0%, #0F172A 100%);
+  color: var(--white);
+  text-align: center;
+  padding: var(--space-16) var(--space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.home-final-cta__content {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.home-final-cta__heading {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--white);
+  margin-bottom: var(--space-3);
+}
+
+.home-final-cta__sub {
+  font-size: var(--font-size-lg);
+  color: var(--gold);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-4);
+}
+
+.home-final-cta__text {
+  font-size: var(--font-size-base);
+  color: #94A3B8;
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-8);
+}
+
+.home-final-cta__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Media Queries
+   -------------------------------------------------------------------------- */
+@media (max-width: 992px) {
+  .home-hero__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .home-hero__title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .home-philosophy__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .home-assessment-banner {
+    grid-template-columns: 1fr;
+    padding: var(--space-8) var(--space-6);
+  }
+
+  .home-portals-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-hero__title {
+    font-size: 1.875rem;
+  }
+
+  .home-hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .home-hero__actions .mst-btn {
+    width: 100%;
+  }
+
+  .home-philosophy__points {
+    grid-template-columns: 1fr;
+  }
+
+  .home-assessment-features {
+    grid-template-columns: 1fr;
+  }
+
+  .home-final-cta__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .home-final-cta__actions .mst-btn {
+    width: 100%;
+  }
+}
