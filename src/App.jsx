@@ -6,6 +6,7 @@ import About from './pages/About.jsx';
 import Programs from './pages/Programs.jsx';
 import LearningSystem from './pages/LearningSystem.jsx';
 import Resources from './pages/Resources.jsx';
+import Contact from './pages/Contact.jsx';
 import Modal from './components/Modal.jsx';
 import Button from './components/Button.jsx';
 import Input from './components/Input.jsx';
@@ -122,12 +123,25 @@ export default function App() {
       );
     }
 
+    if (currentPath === '/contact') {
+      document.title = 'Contact | MS Tutorials';
+      return (
+        <Contact
+          onOpenInquiry={handleOpenInquiry}
+          onNavigate={(path) => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setCurrentPath(path);
+          }}
+        />
+      );
+    }
+
     // Clean placeholder view for future routes before their scheduled phase
     return (
       <main className="container" style={{ padding: 'var(--space-16) var(--space-6)', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <EmptyState
           title={`Route: ${currentPath}`}
-          description="This section is scheduled for implementation in upcoming roadmap phases (Phase 4.6 for Contact Page; Phases 6 – 10 for Portals)."
+          description="This section is scheduled for implementation in upcoming roadmap phases (Phases 6 – 10 for Portals & LMS)."
           action={
             <Button
               variant="primary"
