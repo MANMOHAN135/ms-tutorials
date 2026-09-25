@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <defs>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E9C8A" />
+      <stop offset="100%" stop-color="#0A7A6B" />
+    </linearGradient>
+  </defs>
+  <!-- M emblem -->
+  <path d="M 15 45 L 15 15 L 28 35 L 41 15 L 41 45" fill="none" stroke="url(#tealGrad)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Text: MS Tutorials -->
+  <text x="54" y="32" font-family="'Poppins', sans-serif" font-weight="700" font-size="20" fill="#0B2545">MS Tutorials</text>
+  <text x="55" y="44" font-family="'Inter', sans-serif" font-weight="500" font-size="8" fill="#F0A500" letter-spacing="1">MATHS &amp; SCIENCE</text>
+</svg>
