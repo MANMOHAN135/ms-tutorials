@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
+import About from './pages/About.jsx';
 import Modal from './components/Modal.jsx';
 import Button from './components/Button.jsx';
 import Input from './components/Input.jsx';
@@ -54,8 +55,22 @@ export default function App() {
 
   const renderContent = () => {
     if (currentPath === '/' || currentPath === '') {
+      document.title = 'MS Tutorials | Building a Foundation in Maths & Science';
       return (
         <Home
+          onOpenInquiry={handleOpenInquiry}
+          onNavigate={(path) => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setCurrentPath(path);
+          }}
+        />
+      );
+    }
+
+    if (currentPath === '/about') {
+      document.title = 'About MS Tutorials | Our Learning Philosophy';
+      return (
+        <About
           onOpenInquiry={handleOpenInquiry}
           onNavigate={(path) => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
