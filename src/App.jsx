@@ -59,7 +59,7 @@ export default function App() {
 
   const renderContent = () => {
     if (currentPath === '/' || currentPath === '') {
-      document.title = 'MS Tutorials | Building a Foundation in Maths & Science';
+      document.title = 'MS Tutorials | Building Strong Foundations in Maths & Science';
       return (
         <Home
           onOpenInquiry={handleOpenInquiry}
@@ -72,7 +72,7 @@ export default function App() {
     }
 
     if (currentPath === '/about') {
-      document.title = 'About MS Tutorials | Our Learning Philosophy';
+      document.title = 'About | MS Tutorials';
       return (
         <About
           onOpenInquiry={handleOpenInquiry}

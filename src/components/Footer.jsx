@@ -107,6 +107,9 @@ export default function Footer({ onNavigate, className = '' }) {
               <li style={{ color: '#94A3B8', fontSize: 'var(--font-size-sm)' }}>
                 Support: support@mstutorials.com
               </li>
+              <li style={{ color: '#94A3B8', fontSize: 'var(--font-size-sm)' }}>
+                Admin: admin@mstutorials.com
+              </li>
               <li style={{ marginTop: 'var(--space-2)' }}>
                 <a href="/contact" onClick={(e) => handleLinkClick(e, '/contact')} className="mst-footer__link" style={{ color: 'var(--primary)' }}>
                   Request Callback &rarr;

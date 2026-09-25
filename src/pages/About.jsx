@@ -35,7 +35,7 @@ import '../styles/about.css';
  */
 export default function About({ onOpenInquiry, onNavigate }) {
   useEffect(() => {
-    document.title = 'About MS Tutorials | Our Learning Philosophy';
+    document.title = 'About | MS Tutorials';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
