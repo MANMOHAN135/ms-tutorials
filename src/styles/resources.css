@@ -1,0 +1,1219 @@
+/* ==========================================================================
+   MS Tutorials — Resources Page Styles (Phase 4.5)
+   Design System Compliant: Variables, Typography & Responsive Architecture
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Hero Section
+   -------------------------------------------------------------------------- */
+.res-hero {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5FBF9 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.res-hero__grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.res-hero__title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-4);
+}
+
+.res-hero__title span {
+  color: var(--primary);
+}
+
+.res-hero__description {
+  font-size: var(--font-size-lg);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-8);
+  max-width: 600px;
+}
+
+.res-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.res-hero__notice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  background-color: var(--bg-subtle);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+}
+
+.res-hero__visual {
+  display: flex;
+  justify-content: center;
+}
+
+.res-hero-card-stack {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.res-hero-card-stack__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.res-hero-card-stack__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.res-hero-card-stack__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.res-hero-card-stack__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2-5) var(--space-3);
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.res-hero-card-stack__item:hover {
+  transform: translateX(4px);
+  border-color: var(--primary);
+}
+
+.res-hero-card-stack__icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.res-hero-card-stack__info {
+  flex: 1;
+}
+
+.res-hero-card-stack__name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+
+.res-hero-card-stack__sub {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   2. Resource Ecosystem (Supporting the 4-Stage Learning Cycle)
+   -------------------------------------------------------------------------- */
+.res-ecosystem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.res-ecosystem-card {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.res-ecosystem-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--primary);
+}
+
+.res-ecosystem-card--understand::before {
+  background-color: var(--primary);
+}
+
+.res-ecosystem-card--practice::before {
+  background-color: var(--navy);
+}
+
+.res-ecosystem-card--assess::before {
+  background-color: var(--gold);
+}
+
+.res-ecosystem-card--revise::before {
+  background-color: var(--purple);
+}
+
+.res-ecosystem-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.res-ecosystem-card__stage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.res-ecosystem-card__step-num {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-1) var(--space-2-5);
+  border-radius: var(--radius-full);
+  background-color: var(--bg-subtle);
+  color: var(--navy);
+}
+
+.res-ecosystem-card__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.res-ecosystem-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-5);
+}
+
+.res-ecosystem-card__resources {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-4);
+}
+
+.res-ecosystem-card__list-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.res-ecosystem-card__tags {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.res-ecosystem-card__tag-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--navy);
+  background-color: var(--bg-subtle);
+  padding: var(--space-1-5) var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+/* --------------------------------------------------------------------------
+   3. Resource Categories Grid (8 Reusable Formats)
+   -------------------------------------------------------------------------- */
+.res-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.res-cat-card {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.res-cat-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.res-cat-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.res-cat-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.res-cat-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+}
+
+.res-cat-card__text {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-4);
+  flex: 1;
+}
+
+.res-cat-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px dashed var(--border-color);
+  padding-top: var(--space-3);
+}
+
+.res-cat-card__focus {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   4. Browse by Class (Interactive Static Preview)
+   -------------------------------------------------------------------------- */
+.res-class-tabs {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-6);
+}
+
+.res-class-tab {
+  padding: var(--space-2-5) var(--space-5);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background-color: var(--white);
+  color: var(--navy);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.res-class-tab:hover {
+  border-color: var(--primary);
+  background-color: var(--light-teal);
+}
+
+.res-class-tab--active {
+  background-color: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+}
+
+.res-class-tab--active:hover {
+  background-color: var(--navy);
+  color: var(--white);
+}
+
+.res-class-preview-card {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.res-class-preview__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.res-class-preview__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+}
+
+.res-class-preview__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+.res-class-preview__col-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.res-class-preview__topics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.res-class-preview__topics-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-normal);
+}
+
+/* --------------------------------------------------------------------------
+   5. Browse by Subject (Maths & Science)
+   -------------------------------------------------------------------------- */
+.res-subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+}
+
+.res-subject-card {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.res-subject-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.res-subject-card__icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.res-subject-card__icon-box--maths {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.res-subject-card__icon-box--science {
+  background-color: #EBF3FD;
+  color: #1E40AF;
+}
+
+.res-subject-card__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+
+.res-subject-card__tagline {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.res-subject-card__desc {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-6);
+}
+
+.res-subject-card__block {
+  margin-bottom: var(--space-5);
+}
+
+.res-subject-card__block-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--navy);
+  margin-bottom: var(--space-2-5);
+}
+
+.res-subject-card__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.res-subject-card__pill {
+  font-size: var(--font-size-xs);
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  padding: var(--space-1) var(--space-2-5);
+  border-radius: var(--radius-md);
+  color: var(--navy);
+  font-weight: var(--font-weight-medium);
+}
+
+/* --------------------------------------------------------------------------
+   6. Resource Discovery (Search & Filter Demo)
+   -------------------------------------------------------------------------- */
+.res-discovery-box {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+  max-width: 1000px;
+  margin: var(--space-8) auto 0;
+}
+
+.res-discovery-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: #FEF3C7;
+  color: #92400E;
+  padding: var(--space-2-5) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-6);
+  border: 1px solid #FCD34D;
+}
+
+.res-discovery-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.res-discovery-search {
+  position: relative;
+  width: 100%;
+}
+
+.res-discovery-search__icon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-subtle);
+  pointer-events: none;
+}
+
+.res-discovery-search__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-4) + 26px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  font-size: var(--font-size-base);
+  color: var(--navy);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.res-discovery-search__input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 156, 138, 0.15);
+}
+
+.res-discovery-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-3);
+}
+
+.res-discovery-select {
+  width: 100%;
+  padding: var(--space-2-5) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-subtle);
+  font-size: var(--font-size-sm);
+  color: var(--navy);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.res-discovery-select:focus {
+  border-color: var(--primary);
+}
+
+.res-discovery-results {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-6);
+}
+
+.res-discovery-results__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.res-discovery-results__count {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+}
+
+/* --------------------------------------------------------------------------
+   7. Featured Resource Cards
+   -------------------------------------------------------------------------- */
+.res-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.res-item-card {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.res-item-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.res-item-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.res-item-card__type {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+}
+
+.res-item-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+  line-height: var(--line-height-snug);
+}
+
+.res-item-card__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  background-color: var(--bg-subtle);
+  padding: var(--space-1) var(--space-2-5);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-3);
+  align-self: flex-start;
+}
+
+.res-item-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-5);
+  flex: 1;
+}
+
+.res-item-card__bottom {
+  border-top: 1px dashed var(--border-color);
+  padding-top: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.res-item-card__notice {
+  font-size: var(--font-size-xs);
+  color: var(--text-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* --------------------------------------------------------------------------
+   8. How Students Use Resources (Purposeful 6-Step Sequence)
+   -------------------------------------------------------------------------- */
+.res-sequence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.res-seq-step {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.res-seq-step__num {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  background-color: var(--light-teal);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.res-seq-step__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.res-seq-step__text {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+}
+
+.res-sequence-cta {
+  margin-top: var(--space-8);
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   9. Resource Organization Hierarchy Diagram
+   -------------------------------------------------------------------------- */
+.res-hierarchy-wrapper {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  max-width: 960px;
+  margin: var(--space-8) auto 0;
+}
+
+.res-hierarchy-chain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-4) 0;
+}
+
+.res-hierarchy-node {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 140px;
+  flex: 1;
+  text-align: center;
+  position: relative;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.res-hierarchy-node:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.res-hierarchy-node__level {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  margin-bottom: var(--space-1);
+}
+
+.res-hierarchy-node__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-1);
+}
+
+.res-hierarchy-node__example {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.res-hierarchy-separator {
+  color: var(--text-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.res-hierarchy-summary {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  text-align: center;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --------------------------------------------------------------------------
+   10. Portals: Student & Parent Learning Spaces
+   -------------------------------------------------------------------------- */
+.res-portals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+}
+
+.res-portal-card {
+  background-color: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-color);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.res-portal-card__icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+}
+
+.res-portal-card__icon-box--student {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.res-portal-card__icon-box--parent {
+  background-color: #EBF3FD;
+  color: #1E40AF;
+}
+
+.res-portal-card__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.res-portal-card__desc {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-6);
+}
+
+.res-portal-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-8) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.res-portal-card__list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
+  font-size: var(--font-size-sm);
+  color: var(--text-main);
+  line-height: var(--line-height-normal);
+}
+
+/* --------------------------------------------------------------------------
+   11. Digital Learning Philosophy
+   -------------------------------------------------------------------------- */
+.res-philosophy-card {
+  background: linear-gradient(135deg, var(--navy) 0%, #153B69 100%);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-10);
+  color: var(--white);
+  box-shadow: var(--shadow-xl);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.res-philosophy-card__quote {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+  margin-bottom: var(--space-4);
+  color: var(--white);
+}
+
+.res-philosophy-card__quote span {
+  color: var(--primary);
+}
+
+.res-philosophy-card__sub {
+  font-size: var(--font-size-base);
+  color: rgba(255, 255, 255, 0.85);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-8);
+  max-width: 760px;
+}
+
+.res-philosophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: var(--space-6);
+}
+
+.res-philosophy-item {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.res-philosophy-item__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--gold);
+  margin-bottom: var(--space-1);
+}
+
+.res-philosophy-item__text {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.8);
+  line-height: var(--line-height-relaxed);
+}
+
+/* --------------------------------------------------------------------------
+   12. Resource Library Status Banner
+   -------------------------------------------------------------------------- */
+.res-status-banner {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.res-status-banner__info {
+  flex: 1;
+  min-width: 280px;
+}
+
+.res-status-banner__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.res-status-banner__text {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   13. FAQ Accordion
+   -------------------------------------------------------------------------- */
+.res-faq-container {
+  max-width: 820px;
+  margin: var(--space-8) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.faq-item {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.faq-item.is-open {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  cursor: pointer;
+  outline: none;
+  gap: var(--space-3);
+  transition: color var(--transition-fast);
+}
+
+.faq-button:hover,
+.faq-button:focus-visible {
+  color: var(--primary);
+}
+
+.faq-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.faq-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.faq-item.is-open .faq-icon {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+.faq-content {
+  padding: 0 var(--space-5) var(--space-5) var(--space-5);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .res-hero-card-stack__item,
+  .res-ecosystem-card,
+  .res-cat-card,
+  .res-item-card,
+  .res-class-tab,
+  .res-hierarchy-node,
+  .faq-icon {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Media Queries
+   -------------------------------------------------------------------------- */
+@media (max-width: 992px) {
+  .res-hero__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .res-hero__title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .res-class-preview__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .res-hierarchy-chain {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .res-hierarchy-separator {
+    transform: rotate(90deg);
+    padding: var(--space-2) 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .res-subject-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .res-discovery-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .res-philosophy-card {
+    padding: var(--space-6);
+  }
+
+  .res-philosophy-card__quote {
+    font-size: var(--font-size-xl);
+  }
+}
+
+@media (max-width: 640px) {
+  .res-hero__title {
+    font-size: 1.875rem;
+  }
+
+  .res-hero__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .res-hero__actions .mst-btn {
+    width: 100%;
+  }
+
+  .res-class-tabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+  }
+
+  .res-class-tab {
+    flex-shrink: 0;
+  }
+
+  .res-discovery-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .res-status-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .res-status-banner .mst-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .res-hero-card-stack {
+    padding: var(--space-4);
+  }
+
+  .res-class-preview-card {
+    padding: var(--space-4);
+  }
+
+  .res-discovery-box {
+    padding: var(--space-4);
+  }
+}
