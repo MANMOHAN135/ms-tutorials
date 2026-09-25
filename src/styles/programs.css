@@ -1,0 +1,439 @@
+/* ==========================================================================
+   MS Tutorials — Programs Page Styles (Phase 4.3)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Hero Section
+   -------------------------------------------------------------------------- */
+.programs-hero {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5FBF9 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.programs-hero__grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.programs-hero__title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-4);
+}
+
+.programs-hero__title span {
+  color: var(--primary);
+}
+
+.programs-hero__description {
+  font-size: var(--font-size-lg);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-8);
+  max-width: 600px;
+}
+
+.programs-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* --------------------------------------------------------------------------
+   2. Main Programs Grid
+   -------------------------------------------------------------------------- */
+.programs-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+}
+
+.program-detail-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.program-detail-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.program-detail-card--explorers {
+  border-top: 4px solid var(--primary);
+}
+
+.program-detail-card--achievers {
+  border-top: 4px solid var(--navy);
+}
+
+.program-detail-card--foundation {
+  border-top: 4px solid var(--gold);
+}
+
+.program-detail-card__header {
+  margin-bottom: var(--space-4);
+}
+
+.program-detail-card__tag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-1);
+  display: block;
+}
+
+.program-detail-card__title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-2);
+}
+
+.program-detail-card__positioning {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--navy);
+  font-style: italic;
+  margin-bottom: var(--space-4);
+  line-height: var(--line-height-normal);
+}
+
+.program-detail-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-6);
+}
+
+.program-detail-card__focus-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  color: var(--navy);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-3);
+}
+
+.program-detail-card__focus-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+  margin-top: auto;
+}
+
+.program-detail-card__focus-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--text-main);
+  font-weight: var(--font-weight-medium);
+}
+
+.program-detail-card__action {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+/* --------------------------------------------------------------------------
+   3. Remedial Mathematics Section
+   -------------------------------------------------------------------------- */
+.remedial-card {
+  background: linear-gradient(135deg, #FAFDFD 0%, #EEF9F7 100%);
+  border: 2px solid #B4ECE5;
+  border-radius: var(--radius-lg);
+  padding: var(--space-10) var(--space-8);
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.remedial-card__title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-3);
+}
+
+.remedial-card__desc {
+  font-size: var(--font-size-base);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-6);
+}
+
+.remedial-topics-matrix {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.remedial-topics-matrix h4 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.remedial-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.remedial-tag {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+  border: 1px solid #B4ECE5;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* --------------------------------------------------------------------------
+   4. Comparison Table (Who Is Each Program For?)
+   -------------------------------------------------------------------------- */
+.programs-table-wrapper {
+  margin-top: var(--space-8);
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.programs-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.programs-table th {
+  background-color: var(--bg-subtle);
+  color: var(--navy);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.programs-table td {
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.programs-table tr:last-child td {
+  border-bottom: none;
+}
+
+.programs-table tr:hover td {
+  background-color: #F8FCFB;
+}
+
+.programs-table-mobile {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.programs-mobile-card {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.programs-mobile-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+}
+.programs-mobile-row:last-child {
+  border-bottom: none;
+}
+
+/* --------------------------------------------------------------------------
+   5. Accessible FAQ Section
+   -------------------------------------------------------------------------- */
+.programs-faq-container {
+  max-width: 800px;
+  margin: var(--space-8) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.faq-item {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.faq-item.is-open {
+  border-color: #B4ECE5;
+}
+
+.faq-button {
+  width: 100%;
+  padding: var(--space-5);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.faq-button:hover {
+  color: var(--primary);
+  background-color: #FAFDFD;
+}
+
+.faq-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.faq-icon {
+  color: var(--primary);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.faq-button[aria-expanded="true"] .faq-icon {
+  transform: rotate(180deg);
+}
+
+.faq-content {
+  padding: 0 var(--space-5) var(--space-5);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
+  border-top: 1px solid transparent;
+}
+
+.faq-item.is-open .faq-content {
+  border-top-color: #E2E8F0;
+  padding-top: var(--space-4);
+}
+
+/* --------------------------------------------------------------------------
+   6. Choosing the Right Path Banner
+   -------------------------------------------------------------------------- */
+.programs-choice-banner {
+  background-color: var(--white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-10) var(--space-8);
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.programs-choice-banner h3 {
+  font-size: var(--font-size-2xl);
+  color: var(--navy);
+  margin-bottom: var(--space-3);
+}
+
+.programs-choice-banner p {
+  color: var(--text-muted);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  max-width: 620px;
+  margin: 0 auto var(--space-6);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Media Queries
+   -------------------------------------------------------------------------- */
+@media (max-width: 992px) {
+  .programs-hero__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .programs-hero__title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .remedial-card {
+    grid-template-columns: 1fr;
+    padding: var(--space-8) var(--space-6);
+  }
+}
+
+@media (max-width: 768px) {
+  .programs-table-wrapper {
+    display: none;
+  }
+
+  .programs-table-mobile {
+    display: flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .programs-hero__title {
+    font-size: 1.875rem;
+  }
+
+  .programs-hero__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .programs-hero__actions .mst-btn {
+    width: 100%;
+  }
+
+  .program-detail-card__focus-list {
+    grid-template-columns: 1fr;
+  }
+}

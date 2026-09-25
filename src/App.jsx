@@ -3,6 +3,7 @@ import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
+import Programs from './pages/Programs.jsx';
 import Modal from './components/Modal.jsx';
 import Button from './components/Button.jsx';
 import Input from './components/Input.jsx';
@@ -80,12 +81,25 @@ export default function App() {
       );
     }
 
+    if (currentPath === '/programs') {
+      document.title = 'Programs | MS Tutorials';
+      return (
+        <Programs
+          onOpenInquiry={handleOpenInquiry}
+          onNavigate={(path) => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setCurrentPath(path);
+          }}
+        />
+      );
+    }
+
     // Clean placeholder view for future routes before their scheduled phase
     return (
       <main className="container" style={{ padding: 'var(--space-16) var(--space-6)', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <EmptyState
           title={`Route: ${currentPath}`}
-          description="This section is scheduled for implementation in upcoming roadmap phases (Phases 4.2 – 4.6 for Public Pages; Phases 6 – 10 for Portals). The Home page is the active Phase 4.1 deliverable."
+          description="This section is scheduled for implementation in upcoming roadmap phases (Phases 4.4 – 4.6 for Public Pages; Phases 6 – 10 for Portals)."
           action={
             <Button
               variant="primary"
