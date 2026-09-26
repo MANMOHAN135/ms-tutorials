@@ -151,8 +151,33 @@ export async function logout(req, res) {
   }
 }
 
+/**
+ * GET /api/auth/me
+ * Returns safe authenticated identity for client session context.
+ */
+export async function getMe(req, res) {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: 'Unauthorized: Authentication required.' });
+    }
+
+    return res.status(200).json({
+      user: {
+        id: req.user.id,
+        role: req.user.role,
+        identifier: req.user.identifier,
+        name: req.user.name,
+      },
+    });
+  } catch (error) {
+    console.error('Authentication Error during getMe:', error.message);
+    return res.status(500).json({ error: 'An unexpected internal error occurred.' });
+  }
+}
+
 export default {
   login,
   refresh,
   logout,
+  getMe,
 };
