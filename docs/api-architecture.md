@@ -52,7 +52,8 @@ Resource routes will be segmented by domain under this prefix:
 - `/api/v1/parent/*` — Parent portal resources (linked children oversight)
 - `/api/v1/teacher/*` — Faculty portal resources (cohorts, grading, attendance)
 - `/api/v1/admin/*` — Institutional governance and system administration
-- `/api/v1/academic/*` — Academic reference taxonomies and curriculum structures
+- `/api/v1/academic/*` — Academic reference taxonomies (sessions, boards, classes, programs, subjects)
+- `/api/v1/curriculum/*` — Curriculum structure (nodes, chapters, topics)
 - `/api/v1/health` — Service and database health monitoring
 
 ### 2.2 Existing Routes & Future Migration Strategy
@@ -87,6 +88,7 @@ server/
 │   ├── teacherRoutes.js          # /api/v1/teacher router
 │   ├── adminRoutes.js            # /api/v1/admin router
 │   ├── academicReferenceRoutes.js# /api/v1/academic reference router
+│   ├── curriculumRoutes.js       # /api/v1/curriculum hierarchy router
 │   └── healthRoutes.js           # /api/health router
 ├── controllers/
 │   ├── authController.js         # Login, refresh, logout, session me
@@ -94,7 +96,8 @@ server/
 │   ├── parentController.js       # Parent portal HTTP handlers
 │   ├── teacherController.js      # Teacher portal HTTP handlers
 │   ├── adminController.js        # Admin portal HTTP handlers
-│   └── academicReferenceController.js # Academic reference HTTP handlers
+│   ├── academicReferenceController.js # Academic reference HTTP handlers
+│   └── curriculumController.js   # Curriculum hierarchy HTTP handlers
 ├── services/
 │   ├── tokenService.js           # JWT & refresh token cryptographic utilities
 │   ├── passwordService.js        # Bcrypt hashing & verification
@@ -104,7 +107,8 @@ server/
 │   ├── parentService.js          # Parent domain operations
 │   ├── teacherService.js         # Faculty domain operations
 │   ├── adminService.js           # Administrative management operations
-│   └── academicReferenceService.js # Academic reference normalization & mapping
+│   ├── academicReferenceService.js # Academic reference normalization & mapping
+│   └── curriculumService.js      # Curriculum tree normalization & traversal
 ├── repositories/
 │   ├── userRepository.js         # Database queries for `users`
 │   ├── studentRepository.js      # Database queries for `students`
@@ -112,6 +116,7 @@ server/
 │   ├── teacherRepository.js      # Database queries for `teachers`
 │   ├── adminRepository.js        # Database queries for `admins`
 │   ├── academicReferenceRepository.js # Parameterized queries for academic reference tables
+│   ├── curriculumRepository.js   # Parameterized queries for nodes, chapters, topics
 │   └── tokenRepository.js        # Database queries for `refresh_tokens`
 ├── utils/
 │   ├── responseFormatter.js      # Standardized JSON response helpers
@@ -382,6 +387,7 @@ The MS Tutorials system recognizes four canonical roles: `student`, `parent`, `t
 | **User Management & Creation** (`/api/v1/admin/users/*`) | ❌ | ❌ | ❌ | Full Access |
 | **System Governance & Audit Logs** (`/api/v1/admin/audit/*`) | ❌ | ❌ | ❌ | Full Access |
 | **Academic Reference Data** (`/api/v1/academic/*`) | Read All (Active) | Read All (Active) | Read All (Active) | Read All (Active) |
+| **Curriculum Structure** (`/api/v1/curriculum/*`) | Read All (Active) | Read All (Active) | Read All (Active) | Read All (Active) |
 
 ---
 
@@ -679,9 +685,63 @@ The following read-only academic reference endpoints are fully implemented and v
 
 ---
 
-### 18.3 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+### 18.3 Implemented Read-Only Curriculum Endpoints (Phase 5.8B)
 
-> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.8A.**  
+The following read-only curriculum endpoints are fully implemented and verified:
+
+#### 1. Curriculum Nodes List
+- **Endpoint**: `GET /api/v1/curriculum/nodes`
+- **Status**: **IMPLEMENTED (Phase 5.8B)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `curriculum_nodes` table (ordered by `created_at ASC`)
+- **Query Parameters**: None (returns canonical collection)
+- **Response**: Standardized success envelope returning array of curriculum nodes (`id`, `sessionId`, `boardId`, `classId`, `subjectId`, `syllabusVersion`, `isActive`, `createdAt`, `updatedAt`).
+
+#### 2. Curriculum Node Detail
+- **Endpoint**: `GET /api/v1/curriculum/nodes/:id`
+- **Status**: **IMPLEMENTED (Phase 5.8B)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `curriculum_nodes` table (by primary key `id`)
+- **URL Parameters**: `:id` (string) — Curriculum node UUID
+- **Response**: Standardized success envelope returning single curriculum node object, or 404 NOT_FOUND.
+
+#### 3. Curriculum Node Chapters
+- **Endpoint**: `GET /api/v1/curriculum/nodes/:id/chapters`
+- **Status**: **IMPLEMENTED (Phase 5.8B)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `chapters` table constrained by `WHERE curriculum_node_id = ?` (ordered by `chapter_number ASC`)
+- **URL Parameters**: `:id` (string) — Curriculum node UUID
+- **Response**: Standardized success envelope returning chapters strictly belonging to the specified node (`id`, `curriculumNodeId`, `chapterNumber`, `title`, `description`, `estimatedTeachingHours`, `status`, `createdAt`, `updatedAt`), or 404 NOT_FOUND if node does not exist.
+
+#### 4. Chapter Detail
+- **Endpoint**: `GET /api/v1/curriculum/chapters/:id`
+- **Status**: **IMPLEMENTED (Phase 5.8B)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `chapters` table (by primary key `id`)
+- **URL Parameters**: `:id` (string) — Chapter UUID
+- **Response**: Standardized success envelope returning single chapter object, or 404 NOT_FOUND.
+
+#### 5. Chapter Topics
+- **Endpoint**: `GET /api/v1/curriculum/chapters/:id/topics`
+- **Status**: **IMPLEMENTED (Phase 5.8B)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `topics` table constrained by `WHERE chapter_id = ?` (ordered by `sequence_order ASC`)
+- **URL Parameters**: `:id` (string) — Chapter UUID
+- **Response**: Standardized success envelope returning atomic topics strictly belonging to the specified chapter (`id`, `chapterId`, `sequenceOrder`, `topicCode`, `title`, `description`, `status`, `createdAt`, `updatedAt`), or 404 NOT_FOUND if chapter does not exist.
+
+#### 6. Topic Detail
+- **Endpoint**: `GET /api/v1/curriculum/topics/:id`
+- **Status**: **IMPLEMENTED (Phase 5.8B)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `topics` table (by primary key `id`)
+- **URL Parameters**: `:id` (string) — Topic UUID
+- **Response**: Standardized success envelope returning single topic object, or 404 NOT_FOUND.
+
+---
+
+### 18.4 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+
+> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.8B.**  
 > **These endpoint examples are illustrative architectural examples only and do not constitute approved feature requirements. Each resource must be reviewed and approved during its implementation phase.**
 
 #### Future Student Resources (`/api/v1/student/*`) — [FUTURE / CONCEPTUAL]
@@ -722,16 +782,19 @@ The following read-only academic reference endpoints are fully implemented and v
 | **Phase 5.5** | Protected Identity / Profile API | Locked (`f0b7c7b`) |
 | **Phase 5.6** | Academic Structure & Learning Resource Architecture Blueprint | Locked (`e09c13b`) |
 | **Phase 5.7A**| Academic Database Schema Implementation | Locked (`6e00f90`) |
-| **Phase 5.8A**| **Academic Reference APIs** | **CURRENT — Implemented (Read-Only Reference Endpoints)** |
-| **Phase 5.8B+**| Curriculum & Resource Management APIs | Future Phase: Curriculum trees, batch assignments, resources |
+| **Phase 5.8A**| Academic Reference APIs | Locked (`58653ee`) |
+| **Phase 5.8B**| **Read-Only Curriculum APIs** | **CURRENT — Implemented (Curriculum Hierarchy Endpoints)** |
+| **Phase 5.8C+**| Student Academic Context & Enrollment APIs | Future Phase: Enrollment progression, batch assignments |
+| **Phase 5.8D+**| Learning Resource Management APIs | Future Phase: Resource upload, material attachments |
 | **Phase 6.0+** | Frontend Dashboards & Portal Implementations | Future Phase: Student, Parent, Teacher, Admin dashboards |
 
-### Strict Phase 5.8A Commitments:
-- ✅ Strictly read-only academic reference endpoints implemented (`sessions`, `boards`, `classes`, `programs`, `subjects`).
+### Strict Phase 5.8B Commitments:
+- ✅ Strictly read-only curriculum hierarchy endpoints implemented (`nodes`, `chapters`, `topics`).
 - ✅ Access gated by `requireAuth` and `requireRole('student', 'parent', 'teacher', 'admin')`.
-- ✅ Uses only existing Phase 5.7A academic database tables with explicit column projection (no `SELECT *`).
+- ✅ Uses only existing Phase 5.7A academic database tables (`curriculum_nodes`, `chapters`, `topics`) with explicit column projection (no `SELECT *`).
+- ✅ Strict SQL constraints enforcing hierarchy (`WHERE curriculum_node_id = ?`, `WHERE chapter_id = ?`).
 - ❌ No database tables, migrations, or schemas altered.
 - ❌ No packages installed or dependencies changed.
 - ❌ No frontend pages or dashboards built.
-- ❌ No curriculum tree, student context, resource upload, or admin mutation APIs implemented.
+- ❌ No student enrollment/context, resource upload, assessment, or admin mutation APIs implemented.
 - ❌ No automatic Git commits.

@@ -9,6 +9,7 @@ import parentRoutes from './routes/parentRoutes.js';
 import teacherRoutes from './routes/teacherRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import academicReferenceRoutes from './routes/academicReferenceRoutes.js';
+import curriculumRoutes from './routes/curriculumRoutes.js';
 
 const app = express();
 
@@ -31,6 +32,9 @@ app.use('/api/v1/admin', adminRoutes);
 
 // Protected Academic Reference Routes (Phase 5.8A)
 app.use('/api/v1/academic', academicReferenceRoutes);
+
+// Protected Curriculum Routes (Phase 5.8B)
+app.use('/api/v1/curriculum', curriculumRoutes);
 
 // Base Health Check Route (extended for database connectivity check)
 app.get('/api/health', async (req, res) => {
