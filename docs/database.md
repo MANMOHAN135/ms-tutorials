@@ -1,7 +1,7 @@
 # MS Tutorials — Database Design & Schema Architecture
 
 > [!NOTE]
-> This document details the **planned database schema** for MS Tutorials. The database itself is scheduled for implementation in **Phase 11 (Database + File Storage)**. No database tables or migrations should be run before Phase 11.
+> **Phase 5.1 Status**: Core identity and authentication tables (`users`, `students`, `parents`, `teachers`, `admins`, `parent_student`, `refresh_tokens`) are implemented in `database/schema/identity.sql` and `database/migrations/001_create_identity_tables.sql`. Downstream academic structure, resources, assessments, attendance, and fee tables remain planned for subsequent phases.
 
 ---
 
@@ -9,58 +9,129 @@
 1. **Third Normal Form (3NF)**: Normalize entities to minimize redundancy and prevent update anomalies.
 2. **Strict Foreign Key Constraints**: Enforce referential integrity on all relational boundaries with cascade or restrict rules explicitly declared.
 3. **Audit Fields**: Every core table includes `created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP` and `updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`.
-4. **Appropriate Indexing**: Unique indexes on emails and codes; composite indexes on query paths (e.g., `(student_id, test_id)`).
-5. **Separation of Sensitive Data**: Plaintext passwords are never saved. Only salted bcrypt hashes exist in the `users` table.
+4. **Appropriate Indexing**: Unique indexes on identifiers, emails, and codes; composite indexes on query paths (e.g., `(parent_id, student_id)`).
+5. **Separation of Sensitive Data**: Plaintext passwords are never saved. Only salted bcrypt hashes exist in the `users` table; refresh tokens are stored exclusively as SHA-256 hashes in `refresh_tokens`.
 
 ---
 
-## 2. Planned Entity Groups & Tables
+## 2. Entity Groups & Tables
 
 ```mermaid
 erDiagram
-    USERS ||--o| STUDENTS : "specializes to"
-    USERS ||--o| PARENTS : "specializes to"
-    USERS ||--o| TEACHERS : "specializes to"
-    PARENTS ||--o{ STUDENTS : "linked_to (parent_student)"
+    users ||--o| students : "specializes to (1:1)"
+    users ||--o| parents : "specializes to (1:1)"
+    users ||--o| teachers : "specializes to (1:1)"
+    users ||--o| admins : "specializes to (1:1)"
+    users ||--o{ refresh_tokens : "owns (1:N)"
+    parents ||--o{ parent_student : "links (M:N)"
+    students ||--o{ parent_student : "linked to (M:N)"
     
-    CLASSES ||--o{ BATCHES : "contains"
-    CLASSES ||--o{ SUBJECTS : "teaches"
-    SUBJECTS ||--o{ CHAPTERS : "divided into"
-    CHAPTERS ||--o{ TOPICS : "broken down into"
+    classes ||--o{ batches : "contains"
+    classes ||--o{ subjects : "teaches"
+    subjects ||--o{ chapters : "divided into"
+    chapters ||--o{ topics : "broken down into"
     
-    BATCHES ||--o{ STUDENTS : "enrolls"
+    batches ||--o{ students : "enrolls"
     
-    TOPICS ||--o{ QUESTIONS : "categorizes"
-    TESTS ||--o{ TEST_QUESTIONS : "includes"
-    QUESTIONS ||--o{ TEST_QUESTIONS : "referenced in"
+    topics ||--o{ questions : "categorizes"
+    tests ||--o{ test_questions : "includes"
+    questions ||--o{ test_questions : "referenced in"
     
-    TESTS ||--o{ TEST_ATTEMPTS : "taken as"
-    STUDENTS ||--o{ TEST_ATTEMPTS : "submits"
-    TEST_ATTEMPTS ||--o{ TEST_ANSWERS : "records"
-    QUESTIONS ||--o{ TEST_ANSWERS : "answers"
+    tests ||--o{ test_attempts : "taken as"
+    students ||--o{ test_attempts : "submits"
+    test_attempts ||--o{ test_answers : "records"
+    questions ||--o{ test_answers : "answers"
 
-    STUDENTS ||--o{ ATTENDANCE : "marked for"
-    BATCHES ||--o{ ATTENDANCE : "session of"
+    students ||--o{ attendance : "marked for"
+    batches ||--o{ attendance : "session of"
 
-    STUDENTS ||--o{ FEES : "billed to"
+    students ||--o{ fees : "billed to"
     FEES ||--o{ PAYMENTS : "paid via"
 ```
 
 ---
 
-### Group A: Identity & Users
-- **`users`**: Base credentials and common profile attributes.
-  - Columns: `id` (PK, UUID/INT AUTO_INCREMENT), `email` (UNIQUE), `password_hash`, `role` (`'student' | 'parent' | 'teacher' | 'admin'`), `full_name`, `phone`, `status` (`'active' | 'inactive'`), `created_at`, `updated_at`.
-- **`students`**: Specialized student data.
-  - Columns: `id` (PK), `user_id` (FK -> `users.id`), `admission_number` (UNIQUE), `class_id` (FK -> `classes.id`), `batch_id` (FK -> `batches.id`), `date_of_birth`, `gender`, `address`.
-- **`parents`**: Specialized parent data.
-  - Columns: `id` (PK), `user_id` (FK -> `users.id`), `occupation`, `alternate_phone`.
-- **`parent_student`**: Relational junction table linking parents to children.
-  - Columns: `id` (PK), `parent_id` (FK -> `parents.id`), `student_id` (FK -> `students.id`), `relationship` (`'father' | 'mother' | 'guardian'`).
-- **`teachers`**: Specialized teacher data.
-  - Columns: `id` (PK), `user_id` (FK -> `users.id`), `qualification`, `specialization`, `joining_date`.
-- **`admins`**: Specialized administrator data.
-  - Columns: `id` (PK), `user_id` (FK -> `users.id`), `access_level` (`'superadmin' | 'staff'`).
+### Group A: Identity & Authentication (Implemented in Phase 5.1)
+
+Identity tables are implemented in `database/schema/identity.sql` and `database/migrations/001_create_identity_tables.sql`:
+
+1. **`users`** (Central Authentication Identity)
+   - `id`: `VARCHAR(36) PRIMARY KEY` (UUID)
+   - `identifier`: `VARCHAR(100) NOT NULL UNIQUE` (Student admission number e.g. `AS26090`, or verified email)
+   - `email`: `VARCHAR(255) NULL UNIQUE` (Nullable for young students; unique recovery contact)
+   - `phone`: `VARCHAR(20) NULL`
+   - `password_hash`: `VARCHAR(255) NOT NULL` (Salted bcrypt one-way hash)
+   - `role`: `ENUM('student', 'parent', 'teacher', 'admin') NOT NULL`
+   - `full_name`: `VARCHAR(150) NOT NULL`
+   - `status`: `ENUM('pending_activation', 'active', 'inactive', 'suspended') NOT NULL DEFAULT 'active'`
+   - `failed_login_attempts`: `TINYINT UNSIGNED NOT NULL DEFAULT 0`
+   - `locked_until`: `DATETIME NULL`
+   - `last_login_at`: `DATETIME NULL`
+   - `created_at`, `updated_at`: `TIMESTAMP`
+   - Indexes: `idx_users_role`, `idx_users_status`, `uq_users_identifier`, `uq_users_email`
+
+2. **`students`** (Student Profile Extension)
+   - `id`: `VARCHAR(36) PRIMARY KEY` (UUID)
+   - `user_id`: `VARCHAR(36) NOT NULL UNIQUE` (FK -> `users.id` ON DELETE CASCADE)
+   - `admission_number`: `VARCHAR(20) NOT NULL UNIQUE` (Canonical format: `AS{YY}{Class}{Seq}`, e.g. `AS26090` = AS | 26 | 09 | 0)
+   - `date_of_birth`: `DATE NULL`
+   - `gender`: `ENUM('male', 'female', 'other') NULL`
+   - `school_name`: `VARCHAR(200) NULL`
+   - `board`: `ENUM('CBSE', 'ICSE', 'State_Board', 'Other') NULL`
+   - `academic_track`: `ENUM('Explorers', 'Achievers', 'Foundation', 'Remedial') NULL`
+   - `address_text`: `TEXT NULL`
+   - `created_at`, `updated_at`: `TIMESTAMP`
+   - Indexes: `idx_students_admission_number`, `idx_students_board`, `idx_students_academic_track`
+
+3. **`parents`** (Parent Profile Extension)
+   - `id`: `VARCHAR(36) PRIMARY KEY` (UUID)
+   - `user_id`: `VARCHAR(36) NOT NULL UNIQUE` (FK -> `users.id` ON DELETE CASCADE)
+   - `parent_code`: `VARCHAR(20) NOT NULL UNIQUE` (Canonical format: `PR26090`)
+   - `occupation`: `VARCHAR(100) NULL`
+   - `alternate_phone`: `VARCHAR(20) NULL`
+   - `emergency_contact_phone`: `VARCHAR(20) NULL`
+   - `created_at`, `updated_at`: `TIMESTAMP`
+   - Indexes: `idx_parents_parent_code`
+
+4. **`teachers`** (Faculty Profile Extension)
+   - `id`: `VARCHAR(36) PRIMARY KEY` (UUID)
+   - `user_id`: `VARCHAR(36) NOT NULL UNIQUE` (FK -> `users.id` ON DELETE CASCADE)
+   - `faculty_code`: `VARCHAR(20) NOT NULL UNIQUE` (Canonical format: `TR2604`)
+   - `qualification`: `VARCHAR(150) NULL`
+   - `specialization`: `VARCHAR(150) NULL`
+   - `joining_date`: `DATE NULL`
+   - `created_at`, `updated_at`: `TIMESTAMP`
+   - Indexes: `idx_teachers_faculty_code`
+
+5. **`admins`** (Administrative Profile Extension)
+   - `id`: `VARCHAR(36) PRIMARY KEY` (UUID)
+   - `user_id`: `VARCHAR(36) NOT NULL UNIQUE` (FK -> `users.id` ON DELETE CASCADE)
+   - `admin_code`: `VARCHAR(20) NOT NULL UNIQUE` (Canonical format: `AD01`)
+   - `access_level`: `ENUM('superadmin', 'staff') NOT NULL DEFAULT 'staff'`
+   - `department`: `VARCHAR(100) NULL`
+   - `created_at`, `updated_at`: `TIMESTAMP`
+   - Indexes: `idx_admins_access_level`
+
+6. **`parent_student`** (Parent-Student Relational Junction)
+   - `id`: `BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY`
+   - `parent_id`: `VARCHAR(36) NOT NULL` (FK -> `parents.id` ON DELETE CASCADE)
+   - `student_id`: `VARCHAR(36) NOT NULL` (FK -> `students.id` ON DELETE CASCADE)
+   - `relationship_type`: `ENUM('father', 'mother', 'guardian') NOT NULL`
+   - `is_primary_contact`: `BOOLEAN NOT NULL DEFAULT TRUE`
+   - `created_at`, `updated_at`: `TIMESTAMP`
+   - Constraints: `UNIQUE KEY uq_parent_student (parent_id, student_id)`
+   - Indexes: `idx_parent_student_parent`, `idx_parent_student_student`
+
+7. **`refresh_tokens`** (Secure Session Store)
+   - `id`: `VARCHAR(36) PRIMARY KEY` (UUID)
+   - `user_id`: `VARCHAR(36) NOT NULL` (FK -> `users.id` ON DELETE CASCADE)
+   - `token_hash`: `VARCHAR(64) NOT NULL UNIQUE` (SHA-256 hash of refresh token; never raw token)
+   - `device_fingerprint`: `VARCHAR(255) NULL`
+   - `ip_address`: `VARCHAR(45) NULL`
+   - `expires_at`: `DATETIME NOT NULL`
+   - `revoked_at`: `DATETIME NULL`
+   - `created_at`: `TIMESTAMP`
+   - Indexes: `idx_refresh_tokens_user_id`, `idx_refresh_tokens_expires_at`, `idx_refresh_tokens_revoked_at`
 
 ---
 
