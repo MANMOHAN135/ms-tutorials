@@ -4,6 +4,10 @@ import cookieParser from 'cookie-parser';
 import { config } from './config/environment.js';
 import { checkDatabaseHealth } from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
+import parentRoutes from './routes/parentRoutes.js';
+import teacherRoutes from './routes/teacherRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 
@@ -17,6 +21,12 @@ app.use(express.json());
 
 // Authentication Routes (Phase 5.2)
 app.use('/api/auth', authRoutes);
+
+// Protected Identity & Profile Routes (Phase 5.5)
+app.use('/api/v1/student', studentRoutes);
+app.use('/api/v1/parent', parentRoutes);
+app.use('/api/v1/teacher', teacherRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // Base Health Check Route (extended for database connectivity check)
 app.get('/api/health', async (req, res) => {

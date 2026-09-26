@@ -589,30 +589,71 @@ The backend test suite enforces a rigorous baseline across all authentication, r
 
 ---
 
-## 18. Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+## 18. API Endpoint Specifications: Implemented vs. Conceptual
 
-> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.4.**  
+### 18.1 Implemented Identity & Profile Endpoints (Phase 5.5)
+
+The following identity and profile endpoints are fully implemented and verified:
+
+#### 1. Student Profile
+- **Endpoint**: `GET /api/v1/student/profile`
+- **Status**: **IMPLEMENTED (Phase 5.5)**
+- **Auth / Role**: `requireAuth`, `requireRole('student')`
+- **Identity Source**: Derived securely from `req.user.id` (zero client-supplied ID trust).
+- **Response**: Standardized success envelope with safe student profile fields (admission number, name, email, phone, school, board, academic track, date of birth, gender, address).
+
+#### 2. Parent Profile
+- **Endpoint**: `GET /api/v1/parent/profile`
+- **Status**: **IMPLEMENTED (Phase 5.5)**
+- **Auth / Role**: `requireAuth`, `requireRole('parent')`
+- **Identity Source**: Derived securely from `req.user.id`.
+- **Response**: Standardized success envelope with parent profile fields (parent code, occupation, alternate phone, emergency contact phone).
+
+#### 3. Parent Linked Children
+- **Endpoint**: `GET /api/v1/parent/children`
+- **Status**: **IMPLEMENTED (Phase 5.5)**
+- **Auth / Role**: `requireAuth`, `requireRole('parent')`
+- **Identity Source**: Derived from `req.user.id` joined through `parents`, `parent_student`, `students`, and `users`.
+- **Response**: Standardized success envelope returning array of verified linked children only (supporting multi-child families). Does not return future LMS data (marks, attendance, fees).
+
+#### 4. Teacher Profile
+- **Endpoint**: `GET /api/v1/teacher/profile`
+- **Status**: **IMPLEMENTED (Phase 5.5)**
+- **Auth / Role**: `requireAuth`, `requireRole('teacher')`
+- **Identity Source**: Derived securely from `req.user.id`.
+- **Response**: Standardized success envelope with faculty profile fields (faculty code, qualification, specialization, joining date).
+
+#### 5. Admin Profile
+- **Endpoint**: `GET /api/v1/admin/profile`
+- **Status**: **IMPLEMENTED (Phase 5.5)**
+- **Auth / Role**: `requireAuth`, `requireRole('admin')`
+- **Identity Source**: Derived securely from `req.user.id`.
+- **Response**: Standardized success envelope with administrative profile fields (admin code, access level `superadmin`/`staff`, department).
+
+---
+
+### 18.2 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+
+> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.5.**  
 > **These endpoint examples are illustrative architectural examples only and do not constitute approved feature requirements. Each resource must be reviewed and approved during its implementation phase.**
 
-### 18.1 Student Portal Resources (`/api/v1/student/*`)
-- `GET /api/v1/student/profile` — Retrieve authenticated student's academic profile and enrolled grade/batch.
+#### Future Student Resources (`/api/v1/student/*`) — [FUTURE / CONCEPTUAL]
 - `GET /api/v1/student/attendance` — Retrieve student's personal attendance history and overall percentage.
 - `GET /api/v1/student/mistake-book` — Retrieve personalized mistake log entries across Maths & Science topics.
 - `GET /api/v1/student/assessments` — Retrieve upcoming and past chapter tests, scores, and answer keys.
 
-### 18.2 Parent Portal Resources (`/api/v1/parent/*`)
-- `GET /api/v1/parent/children` — List all active linked children verified via `parent_student`.
+#### Future Parent Resources (`/api/v1/parent/*`) — [FUTURE / CONCEPTUAL]
 - `GET /api/v1/parent/children/:childId/summary` — Overview of child attendance, recent scores, and teacher remarks.
 - `GET /api/v1/parent/children/:childId/attendance` — Detailed attendance calendar for specified child.
 - `GET /api/v1/parent/children/:childId/fees` — Fee ledger, upcoming dues, paid installments, and PDF receipts.
 
-### 18.3 Teacher Portal Resources (`/api/v1/teacher/*`)
+#### Future Teacher Resources (`/api/v1/teacher/*`) — [FUTURE / CONCEPTUAL]
 - `GET /api/v1/teacher/batches` — List academic batches assigned to the authenticated teacher.
 - `GET /api/v1/teacher/batches/:batchId/roster` — Retrieve student roster for assigned batch.
 - `POST /api/v1/teacher/batches/:batchId/attendance` — Submit daily attendance marks for batch students.
 - `POST /api/v1/teacher/assessments` — Create chapter assessment and record student marks.
 
-### 18.4 Admin Portal Resources (`/api/v1/admin/*`)
+#### Future Admin Resources (`/api/v1/admin/*`) — [FUTURE / CONCEPTUAL]
 - `GET /api/v1/admin/users` — Paginated user directory with role and status filtering.
 - `POST /api/v1/admin/users` — Create new student, parent, or faculty account.
 - `PATCH /api/v1/admin/users/:userId/status` — Suspend, activate, or unlock user accounts.
@@ -621,7 +662,7 @@ The backend test suite enforces a rigorous baseline across all authentication, r
 
 ---
 
-## 19. Implementation Boundaries & Future Phases
+## 19. Implementation Boundaries & Project Phases
 
 | Phase | Description | Scope & Status |
 |:---|:---|:---|
@@ -630,14 +671,16 @@ The backend test suite enforces a rigorous baseline across all authentication, r
 | **Phase 5.1** | Database Identity Foundation | Locked (`405d383`) |
 | **Phase 5.2** | Backend Authentication Core | Locked (`7cd2293`) |
 | **Phase 5.3** | Authentication + RBAC Gateway | Locked (`aa159dc`) |
-| **Phase 5.4** | **API & Protected Resource Architecture Blueprint** | **CURRENT — Documentation ONLY (`docs/api-architecture.md`)** |
-| **Phase 5.5** | Frontend Authentication Infrastructure & Login Flow | Future Phase: Auth forms, session state, silent token refresh |
+| **Phase 5.4** | API Architecture Blueprint | Locked (`c3c2f07`) |
+| **Phase 5.5** | **Protected Identity / Profile API** | **CURRENT — Implemented (Identity & Profile Endpoints)** |
+| **Phase 5.6** | Frontend Authentication Infrastructure & Login Flow | Future Phase: Auth forms, session state, silent token refresh |
 | **Phase 6.0+**| Portal Implementations & Academic Core | Future Phase: Student, Parent, Teacher, Admin dashboards & LMS tables |
 
-### Strict Phase 5.4 Commitments:
-- ✅ Strictly documentation only (`docs/api-architecture.md`).
-- ❌ No application code files created or modified.
+### Strict Phase 5.5 Commitments:
+- ✅ Strictly identity / profile endpoints implemented.
+- ✅ Uses only existing identity database tables (`users`, `students`, `parents`, `teachers`, `admins`, `parent_student`, `refresh_tokens`).
 - ❌ No database tables, migrations, or schemas altered.
 - ❌ No packages installed or dependencies changed.
-- ❌ No public website assets modified.
+- ❌ No frontend pages or dashboards built.
+- ❌ No LMS functionality (attendance, marks, fees, assignments) implemented.
 - ❌ No automatic Git commits.
