@@ -378,6 +378,7 @@ The MS Tutorials system recognizes four canonical roles: `student`, `parent`, `t
 | **Authentication Lifecycle** (`/api/v1/auth/*`) | Self | Self | Self | Self |
 | **Own Profile** (`/api/v1/users/me`) | Read / Update Self | Read / Update Self | Read / Update Self | Read / Update Self |
 | **Student Academic Profile** (`/api/v1/student/profile`) | Own record ONLY | ❌ | ❌ | Read All |
+| **Student Academic Context** (`/api/v1/student/academic-context`) | Own record ONLY | ❌ | ❌ | ❌ |
 | **Student Attendance & Mistake Log** (`/api/v1/student/*`) | Own record ONLY | ❌ | Assigned Students | Full Access |
 | **Parent Children Overview** (`/api/v1/parent/children`) | ❌ | Linked Children ONLY | ❌ | Read All |
 | **Child Academic Progress** (`/api/v1/parent/children/:id/*`) | ❌ | Linked Children ONLY | ❌ | Full Access |
@@ -739,9 +740,25 @@ The following read-only curriculum endpoints are fully implemented and verified:
 
 ---
 
-### 18.4 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+### 18.4 Implemented Student Academic Context Endpoint (Phase 5.8C)
 
-> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.8B.**  
+The following student academic context endpoint is fully implemented and verified:
+
+#### 1. Student Academic Context
+- **Endpoint**: `GET /api/v1/student/academic-context`
+- **Status**: **IMPLEMENTED (Phase 5.8C)**
+- **Auth / Role**: `requireAuth`, `requireRole('student')` (Strictly student-only access)
+- **Identity Source**: Derived strictly from `req.user.id` (zero client-supplied ID trust, no path parameters or query parameters accepted)
+- **Data Source**: `users` $\rightarrow$ `students` $\rightarrow$ `student_enrollments` $\rightarrow$ `academic_sessions`, `boards`, `classes`, `programs`, `batches`
+- **Authoritative Hierarchy**: `student_enrollments.board_id` is the authoritative academic board context. Optional `batches.board_id` is cohort metadata only and never overrides enrollment board.
+- **Multiple Enrollment Handling**: Selects the active enrollment prioritized by active session status, session start date (`DESC`), and enrollment date (`DESC`).
+- **Response**: Standardized success envelope returning authenticated student identity and nested current enrollment context (session, board, class, program, batch), or `{ student, enrollment: null }` if no active enrollment exists.
+
+---
+
+### 18.5 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+
+> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.8C.**  
 > **These endpoint examples are illustrative architectural examples only and do not constitute approved feature requirements. Each resource must be reviewed and approved during its implementation phase.**
 
 #### Future Student Resources (`/api/v1/student/*`) — [FUTURE / CONCEPTUAL]
@@ -783,18 +800,19 @@ The following read-only curriculum endpoints are fully implemented and verified:
 | **Phase 5.6** | Academic Structure & Learning Resource Architecture Blueprint | Locked (`e09c13b`) |
 | **Phase 5.7A**| Academic Database Schema Implementation | Locked (`6e00f90`) |
 | **Phase 5.8A**| Academic Reference APIs | Locked (`58653ee`) |
-| **Phase 5.8B**| **Read-Only Curriculum APIs** | **CURRENT — Implemented (Curriculum Hierarchy Endpoints)** |
-| **Phase 5.8C+**| Student Academic Context & Enrollment APIs | Future Phase: Enrollment progression, batch assignments |
+| **Phase 5.8B**| Read-Only Curriculum APIs | Locked (`eabcc19`) |
+| **Phase 5.8C**| **Student Academic Context API** | **CURRENT — Implemented (Active Enrollment Context)** |
 | **Phase 5.8D+**| Learning Resource Management APIs | Future Phase: Resource upload, material attachments |
 | **Phase 6.0+** | Frontend Dashboards & Portal Implementations | Future Phase: Student, Parent, Teacher, Admin dashboards |
 
-### Strict Phase 5.8B Commitments:
-- ✅ Strictly read-only curriculum hierarchy endpoints implemented (`nodes`, `chapters`, `topics`).
-- ✅ Access gated by `requireAuth` and `requireRole('student', 'parent', 'teacher', 'admin')`.
-- ✅ Uses only existing Phase 5.7A academic database tables (`curriculum_nodes`, `chapters`, `topics`) with explicit column projection (no `SELECT *`).
-- ✅ Strict SQL constraints enforcing hierarchy (`WHERE curriculum_node_id = ?`, `WHERE chapter_id = ?`).
+### Strict Phase 5.8C Commitments:
+- ✅ Strictly student-only academic context endpoint implemented (`/api/v1/student/academic-context`).
+- ✅ Access gated by `requireAuth` and `requireRole('student')`.
+- ✅ Identity derived strictly from `req.user.id`; no client-supplied ID trust.
+- ✅ Uses only existing Phase 5.1 identity and Phase 5.7A academic database tables with explicit column projection (no `SELECT *`).
+- ✅ `student_enrollments.board_id` is authoritative; `batch.board_id` never overrides it.
 - ❌ No database tables, migrations, or schemas altered.
 - ❌ No packages installed or dependencies changed.
 - ❌ No frontend pages or dashboards built.
-- ❌ No student enrollment/context, resource upload, assessment, or admin mutation APIs implemented.
+- ❌ No learning resources, assessments, attendance, fees, dashboards, or admin mutations implemented.
 - ❌ No automatic Git commits.
