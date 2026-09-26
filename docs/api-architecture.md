@@ -52,6 +52,7 @@ Resource routes will be segmented by domain under this prefix:
 - `/api/v1/parent/*` — Parent portal resources (linked children oversight)
 - `/api/v1/teacher/*` — Faculty portal resources (cohorts, grading, attendance)
 - `/api/v1/admin/*` — Institutional governance and system administration
+- `/api/v1/academic/*` — Academic reference taxonomies and curriculum structures
 - `/api/v1/health` — Service and database health monitoring
 
 ### 2.2 Existing Routes & Future Migration Strategy
@@ -80,38 +81,37 @@ server/
 │   ├── validationMiddleware.js   # Generic schema/request validator
 │   └── errorMiddleware.js        # Global error & 404 handlers
 ├── routes/
-│   ├── index.js                  # Top-level API router aggregator
 │   ├── authRoutes.js             # Existing auth router (/api/auth)
-│   └── v1/
-│       ├── index.js              # /api/v1 root router
-│       ├── authRoutes.js         # /api/v1/auth router
-│       ├── studentRoutes.js      # /api/v1/student router
-│       ├── parentRoutes.js       # /api/v1/parent router
-│       ├── teacherRoutes.js      # /api/v1/teacher router
-│       ├── adminRoutes.js        # /api/v1/admin router
-│       └── healthRoutes.js       # /api/v1/health router
+│   ├── studentRoutes.js          # /api/v1/student router
+│   ├── parentRoutes.js           # /api/v1/parent router
+│   ├── teacherRoutes.js          # /api/v1/teacher router
+│   ├── adminRoutes.js            # /api/v1/admin router
+│   ├── academicReferenceRoutes.js# /api/v1/academic reference router
+│   └── healthRoutes.js           # /api/health router
 ├── controllers/
-│   └── v1/
-│       ├── authController.js     # Login, refresh, logout, session me
-│       ├── studentController.js  # Student portal HTTP handlers
-│       ├── parentController.js   # Parent portal HTTP handlers
-│       ├── teacherController.js  # Teacher portal HTTP handlers
-│       └── adminController.js    # Admin portal HTTP handlers
+│   ├── authController.js         # Login, refresh, logout, session me
+│   ├── studentController.js      # Student portal HTTP handlers
+│   ├── parentController.js       # Parent portal HTTP handlers
+│   ├── teacherController.js      # Teacher portal HTTP handlers
+│   ├── adminController.js        # Admin portal HTTP handlers
+│   └── academicReferenceController.js # Academic reference HTTP handlers
 ├── services/
 │   ├── tokenService.js           # JWT & refresh token cryptographic utilities
 │   ├── passwordService.js        # Bcrypt hashing & verification
 │   ├── userService.js            # User domain business logic
 │   ├── refreshTokenService.js    # Refresh token database lifecycle
-│   ├── studentService.js         # Student domain operations (future)
-│   ├── parentService.js          # Parent domain operations (future)
-│   ├── teacherService.js         # Faculty domain operations (future)
-│   └── adminService.js           # Administrative management operations (future)
+│   ├── studentService.js         # Student domain operations
+│   ├── parentService.js          # Parent domain operations
+│   ├── teacherService.js         # Faculty domain operations
+│   ├── adminService.js           # Administrative management operations
+│   └── academicReferenceService.js # Academic reference normalization & mapping
 ├── repositories/
 │   ├── userRepository.js         # Database queries for `users`
 │   ├── studentRepository.js      # Database queries for `students`
 │   ├── parentRepository.js       # Database queries for `parents` & `parent_student`
 │   ├── teacherRepository.js      # Database queries for `teachers`
 │   ├── adminRepository.js        # Database queries for `admins`
+│   ├── academicReferenceRepository.js # Parameterized queries for academic reference tables
 │   └── tokenRepository.js        # Database queries for `refresh_tokens`
 ├── utils/
 │   ├── responseFormatter.js      # Standardized JSON response helpers
@@ -381,6 +381,7 @@ The MS Tutorials system recognizes four canonical roles: `student`, `parent`, `t
 | **Attendance & Grade Submission** (`/api/v1/teacher/marks/*`) | ❌ | ❌ | Assigned Batches ONLY | Full Access |
 | **User Management & Creation** (`/api/v1/admin/users/*`) | ❌ | ❌ | ❌ | Full Access |
 | **System Governance & Audit Logs** (`/api/v1/admin/audit/*`) | ❌ | ❌ | ❌ | Full Access |
+| **Academic Reference Data** (`/api/v1/academic/*`) | Read All (Active) | Read All (Active) | Read All (Active) | Read All (Active) |
 
 ---
 
@@ -632,9 +633,55 @@ The following identity and profile endpoints are fully implemented and verified:
 
 ---
 
-### 18.2 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+### 18.2 Implemented Academic Reference Endpoints (Phase 5.8A)
 
-> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.5.**  
+The following read-only academic reference endpoints are fully implemented and verified:
+
+#### 1. Academic Sessions
+- **Endpoint**: `GET /api/v1/academic/sessions`
+- **Status**: **IMPLEMENTED (Phase 5.8A)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `academic_sessions` table (ordered by `start_date ASC`)
+- **Query Parameters**: None (returns canonical reference collection)
+- **Response**: Standardized success envelope returning array of academic sessions (`id`, `sessionCode`, `displayName`, `startDate`, `endDate`, `status`, `createdAt`, `updatedAt`).
+
+#### 2. Boards
+- **Endpoint**: `GET /api/v1/academic/boards`
+- **Status**: **IMPLEMENTED (Phase 5.8A)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `boards` table (ordered by `code ASC`)
+- **Query Parameters**: None (returns canonical reference collection)
+- **Response**: Standardized success envelope returning array of educational boards (`id`, `code`, `name`, `description`, `status`, `createdAt`, `updatedAt`).
+
+#### 3. Classes
+- **Endpoint**: `GET /api/v1/academic/classes`
+- **Status**: **IMPLEMENTED (Phase 5.8A)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `classes` table (ordered by `grade_number ASC`)
+- **Query Parameters**: None (returns canonical reference collection)
+- **Response**: Standardized success envelope returning array of classes/grades (`id`, `gradeNumber`, `code`, `displayName`, `stage`, `status`, `createdAt`, `updatedAt`).
+
+#### 4. Programs
+- **Endpoint**: `GET /api/v1/academic/programs`
+- **Status**: **IMPLEMENTED (Phase 5.8A)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `programs` table (ordered by `code ASC`)
+- **Query Parameters**: None (returns canonical reference collection)
+- **Response**: Standardized success envelope returning array of academic programs/offerings (`id`, `code`, `name`, `description`, `targetStage`, `status`, `createdAt`, `updatedAt`).
+
+#### 5. Subjects
+- **Endpoint**: `GET /api/v1/academic/subjects`
+- **Status**: **IMPLEMENTED (Phase 5.8A)**
+- **Auth / Role**: `requireAuth`, `requireRole('student', 'parent', 'teacher', 'admin')`
+- **Data Source**: `subjects` table (ordered by `name ASC`)
+- **Query Parameters**: None (returns canonical reference collection)
+- **Response**: Standardized success envelope returning array of academic subjects (`id`, `code`, `name`, `parentSubjectId`, `colorCode`, `status`, `createdAt`, `updatedAt`). Supports independent subjects and component disciplines.
+
+---
+
+### 18.3 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+
+> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.8A.**  
 > **These endpoint examples are illustrative architectural examples only and do not constitute approved feature requirements. Each resource must be reviewed and approved during its implementation phase.**
 
 #### Future Student Resources (`/api/v1/student/*`) — [FUTURE / CONCEPTUAL]
@@ -672,15 +719,19 @@ The following identity and profile endpoints are fully implemented and verified:
 | **Phase 5.2** | Backend Authentication Core | Locked (`7cd2293`) |
 | **Phase 5.3** | Authentication + RBAC Gateway | Locked (`aa159dc`) |
 | **Phase 5.4** | API Architecture Blueprint | Locked (`c3c2f07`) |
-| **Phase 5.5** | **Protected Identity / Profile API** | **CURRENT — Implemented (Identity & Profile Endpoints)** |
-| **Phase 5.6** | Frontend Authentication Infrastructure & Login Flow | Future Phase: Auth forms, session state, silent token refresh |
-| **Phase 6.0+**| Portal Implementations & Academic Core | Future Phase: Student, Parent, Teacher, Admin dashboards & LMS tables |
+| **Phase 5.5** | Protected Identity / Profile API | Locked (`f0b7c7b`) |
+| **Phase 5.6** | Academic Structure & Learning Resource Architecture Blueprint | Locked (`e09c13b`) |
+| **Phase 5.7A**| Academic Database Schema Implementation | Locked (`6e00f90`) |
+| **Phase 5.8A**| **Academic Reference APIs** | **CURRENT — Implemented (Read-Only Reference Endpoints)** |
+| **Phase 5.8B+**| Curriculum & Resource Management APIs | Future Phase: Curriculum trees, batch assignments, resources |
+| **Phase 6.0+** | Frontend Dashboards & Portal Implementations | Future Phase: Student, Parent, Teacher, Admin dashboards |
 
-### Strict Phase 5.5 Commitments:
-- ✅ Strictly identity / profile endpoints implemented.
-- ✅ Uses only existing identity database tables (`users`, `students`, `parents`, `teachers`, `admins`, `parent_student`, `refresh_tokens`).
+### Strict Phase 5.8A Commitments:
+- ✅ Strictly read-only academic reference endpoints implemented (`sessions`, `boards`, `classes`, `programs`, `subjects`).
+- ✅ Access gated by `requireAuth` and `requireRole('student', 'parent', 'teacher', 'admin')`.
+- ✅ Uses only existing Phase 5.7A academic database tables with explicit column projection (no `SELECT *`).
 - ❌ No database tables, migrations, or schemas altered.
 - ❌ No packages installed or dependencies changed.
 - ❌ No frontend pages or dashboards built.
-- ❌ No LMS functionality (attendance, marks, fees, assignments) implemented.
+- ❌ No curriculum tree, student context, resource upload, or admin mutation APIs implemented.
 - ❌ No automatic Git commits.
