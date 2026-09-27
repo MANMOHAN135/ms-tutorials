@@ -16,9 +16,10 @@ import Badge from './components/Badge.jsx';
 import EmptyState from './components/EmptyState.jsx';
 import StudentPortalLayout from './layouts/StudentPortalLayout.jsx';
 import StudentLogin from './student/pages/StudentLogin.jsx';
+import { AuthProvider } from './contexts/AuthContext.jsx';
 import { Sparkles, CheckCircle2 } from 'lucide-react';
 
-export default function App() {
+function AppContent() {
   const [currentPath, setCurrentPath] = useState(() => {
     if (typeof window !== 'undefined' && window.location.pathname) {
       return window.location.pathname;
@@ -276,5 +277,13 @@ export default function App() {
       {/* 4. Global Footer */}
       <Footer onNavigate={handleNavigate} />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

@@ -1,28 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../../components/Card.jsx';
 import Button from '../../components/Button.jsx';
 import Input from '../../components/Input.jsx';
 import Badge from '../../components/Badge.jsx';
-import { ArrowLeft, ShieldAlert } from 'lucide-react';
+import useAuth from '../../hooks/useAuth.js';
+import { ArrowLeft, AlertCircle, LogIn } from 'lucide-react';
 
 /**
- * Student Login Shell View (Phase 5.10A Foundation)
+ * Student Login View (Phase 5.10B Auth Integration)
  * 
- * Provides structural login card without implementing active JWT/auth handling.
+ * Interacts with locked POST /api/auth/login via AuthContext.
  * 
  * @param {Object} props
  * @param {Function} props.onNavigate - Navigation callback
  */
 export default function StudentLogin({ onNavigate }) {
+  const { user, isAuthenticated, isSubmitting, error, login, clearError } = useAuth();
+
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (onNavigate) {
+  // If already authenticated as student, navigate straight to dashboard
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'student') {
       onNavigate('/student/dashboard');
     }
+  }, [isAuthenticated, user, onNavigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLocalError('');
+    clearError();
+
+    if (!identifier.trim()) {
+      setLocalError('Please enter your student email or admission number.');
+      return;
+    }
+
+    if (!password) {
+      setLocalError('Please enter your password.');
+      return;
+    }
+
+    try {
+      await login({ identifier, password });
+
+      // Resolve redirect destination safely
+      let target = '/student/dashboard';
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const redirectParam = params.get('redirect');
+        if (redirectParam && redirectParam.startsWith('/student') && redirectParam !== '/student/login') {
+          target = redirectParam;
+        }
+      }
+      onNavigate(target);
+    } catch (err) {
+      // Error is set in AuthContext state
+    }
   };
+
+  const activeError = localError || error;
 
   return (
     <div
@@ -78,34 +117,44 @@ export default function StudentLogin({ onNavigate }) {
               </p>
             </div>
 
-            {/* Architecture Notice */}
-            <div
-              style={{
-                backgroundColor: 'var(--warning-bg)',
-                border: '1px solid var(--warning-border)',
-                borderRadius: 'var(--radius-sm)',
-                padding: 'var(--space-3)',
-                marginBottom: 'var(--space-5)',
-                display: 'flex',
-                gap: 'var(--space-2)',
-                fontSize: 'var(--font-size-xs)',
-                color: 'var(--warning)',
-                lineHeight: '1.4',
-              }}
-            >
-              <ShieldAlert size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
-              <div>
-                <strong>Foundation Shell:</strong> Active authentication and JWT session handling are scheduled for Phase 6. Submitting will open the student workspace shell.
+            {/* Error Alert */}
+            {activeError && (
+              <div
+                style={{
+                  backgroundColor: 'var(--danger-bg)',
+                  border: '1px solid var(--danger-border)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: 'var(--space-3)',
+                  marginBottom: 'var(--space-5)',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 'var(--space-2)',
+                  fontSize: 'var(--font-size-xs)',
+                  color: 'var(--danger)',
+                  lineHeight: '1.4',
+                }}
+                role="alert"
+                aria-live="assertive"
+              >
+                <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>{activeError}</span>
               </div>
-            </div>
+            )}
 
             {/* Form */}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
               <Input
                 label="Student Email / Admission No."
-                placeholder="e.g. rahul@student.mstutorials.com"
+                placeholder="e.g. AS26090 or student@mstutorials.com"
                 value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                disabled={isSubmitting}
+                onChange={(e) => {
+                  setIdentifier(e.target.value);
+                  if (activeError) {
+                    setLocalError('');
+                    clearError();
+                  }
+                }}
               />
 
               <Input
@@ -113,16 +162,26 @@ export default function StudentLogin({ onNavigate }) {
                 type="password"
                 placeholder="••••••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                disabled={isSubmitting}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (activeError) {
+                    setLocalError('');
+                    clearError();
+                  }
+                }}
               />
 
               <Button
                 variant="primary"
                 size="md"
                 type="submit"
+                isLoading={isSubmitting}
+                disabled={isSubmitting}
+                leftIcon={!isSubmitting && <LogIn size={16} />}
                 style={{ width: '100%', marginTop: 'var(--space-2)' }}
               >
-                Access Student Workspace
+                {isSubmitting ? 'Authenticating...' : 'Sign In'}
               </Button>
             </form>
           </div>

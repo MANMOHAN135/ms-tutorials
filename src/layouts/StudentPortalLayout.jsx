@@ -4,6 +4,7 @@ import StudentSidebar from '../student/components/StudentSidebar.jsx';
 import StudentMobileNavigation from '../student/components/StudentMobileNavigation.jsx';
 import StudentDashboard from '../student/pages/StudentDashboard.jsx';
 import StudentPagePlaceholder from '../student/components/StudentPagePlaceholder.jsx';
+import StudentProtectedRoute from '../student/components/StudentProtectedRoute.jsx';
 
 /**
  * Master Shell Layout for MS Tutorials Student Portal
@@ -197,46 +198,48 @@ export default function StudentPortalLayout({ currentPath, onNavigate }) {
   };
 
   return (
-    <div className="mst-sp-layout">
-      {/* 1. Accessible Skip Navigation Link */}
-      <a href="#student-main-content" className="mst-sp-skip-link">
-        Skip to main content
-      </a>
+    <StudentProtectedRoute currentPath={currentPath} onNavigate={onNavigate}>
+      <div className="mst-sp-layout">
+        {/* 1. Accessible Skip Navigation Link */}
+        <a href="#student-main-content" className="mst-sp-skip-link">
+          Skip to main content
+        </a>
 
-      {/* 2. Top Application Header */}
-      <StudentHeader
-        onNavigate={onNavigate}
-        onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
-        isMobileNavOpen={isMobileNavOpen}
-      />
-
-      {/* 3. Main Workspace Shell (Sidebar + Canvas) */}
-      <div className="mst-sp-body-container">
-        {/* Desktop Persistent Left Rail Sidebar */}
-        <StudentSidebar
-          currentPath={currentPath}
+        {/* 2. Top Application Header */}
+        <StudentHeader
           onNavigate={onNavigate}
+          onToggleMobileNav={() => setIsMobileNavOpen(!isMobileNavOpen)}
+          isMobileNavOpen={isMobileNavOpen}
         />
 
-        {/* Mobile / Tablet Slide-out Drawer */}
-        <StudentMobileNavigation
-          isOpen={isMobileNavOpen}
-          onClose={() => setIsMobileNavOpen(false)}
-          currentPath={currentPath}
-          onNavigate={onNavigate}
-        />
+        {/* 3. Main Workspace Shell (Sidebar + Canvas) */}
+        <div className="mst-sp-body-container">
+          {/* Desktop Persistent Left Rail Sidebar */}
+          <StudentSidebar
+            currentPath={currentPath}
+            onNavigate={onNavigate}
+          />
 
-        {/* Content Canvas */}
-        <div className="mst-sp-canvas">
-          <main
-            id="student-main-content"
-            className="mst-sp-main-content"
-            tabIndex="-1"
-          >
-            {renderStudentView()}
-          </main>
+          {/* Mobile / Tablet Slide-out Drawer */}
+          <StudentMobileNavigation
+            isOpen={isMobileNavOpen}
+            onClose={() => setIsMobileNavOpen(false)}
+            currentPath={currentPath}
+            onNavigate={onNavigate}
+          />
+
+          {/* Content Canvas */}
+          <div className="mst-sp-canvas">
+            <main
+              id="student-main-content"
+              className="mst-sp-main-content"
+              tabIndex="-1"
+            >
+              {renderStudentView()}
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </StudentProtectedRoute>
   );
 }

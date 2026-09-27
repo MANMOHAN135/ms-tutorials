@@ -1,9 +1,12 @@
 import React from 'react';
 import { Menu, User, LogOut } from 'lucide-react';
 import StudentContextBadge from './StudentContextBadge.jsx';
+import useAuth from '../../hooks/useAuth.js';
 
 /**
  * Top Application Header for Student Portal
+ * 
+ * Displays authenticated student details and provides logout trigger.
  * 
  * @param {Object} props
  * @param {Function} props.onNavigate - Client navigation handler
@@ -15,6 +18,21 @@ export default function StudentHeader({
   onToggleMobileNav,
   isMobileNavOpen = false,
 }) {
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    if (onNavigate) {
+      onNavigate('/student/login');
+    }
+  };
+
+  const displayName = user?.name || 'Student Portal';
+  const displaySub = user?.identifier
+    ? `ID: ${user.identifier}`
+    : (user?.role ? `Role: ${user.role}` : 'Enrolled Student');
+  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : null;
+
   return (
     <header className="mst-sp-header" role="banner">
       <div className="mst-sp-header__inner">
@@ -56,7 +74,7 @@ export default function StudentHeader({
           />
         </div>
 
-        {/* Right Section: Student Profile Shell & Exit */}
+        {/* Right Section: Authenticated Student Profile & Logout */}
         <div className="mst-sp-header__actions">
           <a
             href="/student/profile"
@@ -65,14 +83,14 @@ export default function StudentHeader({
               e.preventDefault();
               if (onNavigate) onNavigate('/student/profile');
             }}
-            aria-label="View Student Profile"
+            aria-label={`View Student Profile for ${displayName}`}
           >
             <div className="mst-sp-header__user-avatar" aria-hidden="true">
-              <User size={18} />
+              {userInitial ? userInitial : <User size={18} />}
             </div>
             <div className="mst-sp-header__user-info">
-              <span className="mst-sp-header__user-name">Student Portal</span>
-              <span className="mst-sp-header__user-role">Enrolled Student</span>
+              <span className="mst-sp-header__user-name">{displayName}</span>
+              <span className="mst-sp-header__user-role">{displaySub}</span>
             </div>
           </a>
 
@@ -80,11 +98,9 @@ export default function StudentHeader({
             type="button"
             className="mst-sp-header__menu-btn"
             style={{ display: 'flex' }}
-            title="Return to Public Website"
-            aria-label="Return to Public Website"
-            onClick={() => {
-              if (onNavigate) onNavigate('/');
-            }}
+            title="Sign Out of Student Portal"
+            aria-label="Sign Out of Student Portal"
+            onClick={handleLogout}
           >
             <LogOut size={18} aria-hidden="true" />
           </button>
