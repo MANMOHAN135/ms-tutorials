@@ -83,7 +83,9 @@ server/
 │   └── errorMiddleware.js        # Global error & 404 handlers
 ├── routes/
 │   ├── authRoutes.js             # Existing auth router (/api/auth)
-│   ├── studentRoutes.js          # /api/v1/student router
+│   ├── studentRoutes.js          # /api/v1/student router (mounts profile, context, resources)
+│   ├── studentAcademicContextRoutes.js # /api/v1/student/academic-context router
+│   ├── studentResourceRoutes.js  # /api/v1/student/resources router
 │   ├── parentRoutes.js           # /api/v1/parent router
 │   ├── teacherRoutes.js          # /api/v1/teacher router
 │   ├── adminRoutes.js            # /api/v1/admin router
@@ -92,7 +94,9 @@ server/
 │   └── healthRoutes.js           # /api/health router
 ├── controllers/
 │   ├── authController.js         # Login, refresh, logout, session me
-│   ├── studentController.js      # Student portal HTTP handlers
+│   ├── studentController.js      # Student profile HTTP handlers
+│   ├── studentAcademicContextController.js # Student academic context HTTP handlers
+│   ├── studentResourceController.js # Student learning resource HTTP handlers
 │   ├── parentController.js       # Parent portal HTTP handlers
 │   ├── teacherController.js      # Teacher portal HTTP handlers
 │   ├── adminController.js        # Admin portal HTTP handlers
@@ -104,6 +108,8 @@ server/
 │   ├── userService.js            # User domain business logic
 │   ├── refreshTokenService.js    # Refresh token database lifecycle
 │   ├── studentService.js         # Student domain operations
+│   ├── studentAcademicContextService.js # Student academic context business logic & mapping
+│   ├── studentResourceService.js # Student learning resource business logic & pagination
 │   ├── parentService.js          # Parent domain operations
 │   ├── teacherService.js         # Faculty domain operations
 │   ├── adminService.js           # Administrative management operations
@@ -112,6 +118,8 @@ server/
 ├── repositories/
 │   ├── userRepository.js         # Database queries for `users`
 │   ├── studentRepository.js      # Database queries for `students`
+│   ├── studentAcademicContextRepository.js # Parameterized queries for student academic context
+│   ├── studentResourceRepository.js # Parameterized queries for student learning resources
 │   ├── parentRepository.js       # Database queries for `parents` & `parent_student`
 │   ├── teacherRepository.js      # Database queries for `teachers`
 │   ├── adminRepository.js        # Database queries for `admins`
@@ -379,6 +387,7 @@ The MS Tutorials system recognizes four canonical roles: `student`, `parent`, `t
 | **Own Profile** (`/api/v1/users/me`) | Read / Update Self | Read / Update Self | Read / Update Self | Read / Update Self |
 | **Student Academic Profile** (`/api/v1/student/profile`) | Own record ONLY | ❌ | ❌ | Read All |
 | **Student Academic Context** (`/api/v1/student/academic-context`) | Own record ONLY | ❌ | ❌ | ❌ |
+| **Student Learning Resources** (`/api/v1/student/resources/*`) | Own active context ONLY | ❌ | ❌ | ❌ |
 | **Student Attendance & Mistake Log** (`/api/v1/student/*`) | Own record ONLY | ❌ | Assigned Students | Full Access |
 | **Parent Children Overview** (`/api/v1/parent/children`) | ❌ | Linked Children ONLY | ❌ | Read All |
 | **Child Academic Progress** (`/api/v1/parent/children/:id/*`) | ❌ | Linked Children ONLY | ❌ | Full Access |
@@ -756,9 +765,42 @@ The following student academic context endpoint is fully implemented and verifie
 
 ---
 
-### 18.5 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+### 18.5 Implemented Student Learning Resources Endpoints (Phase 5.8D)
 
-> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.8C.**  
+The following protected read-only learning resource endpoints are fully implemented and verified:
+
+#### 1. Student Learning Resources Listing
+- **Endpoint**: `GET /api/v1/student/resources`
+- **Status**: **IMPLEMENTED (Phase 5.8D)**
+- **Auth / Role**: `requireAuth`, `requireRole('student')` (Strictly student-only access)
+- **Identity Source**: Derived strictly from `req.user.id` (zero client-supplied student/user ID trust)
+- **Academic Authorization**: Scoped strictly to the authenticated student's active enrollment context:
+  $$\text{curriculum\_nodes.session\_id} = \text{enrollment.session\_id} \land \text{curriculum\_nodes.board\_id} = \text{enrollment.board\_id} \land \text{curriculum\_nodes.class\_id} = \text{enrollment.class\_id}$$
+- **Publication & Node Invariants**: Enforces `learning_resources.is_published = TRUE` and `curriculum_nodes.is_active = TRUE` at SQL repository level.
+- **Optional Narrowing Filters**:
+  - `subjectId` (string, validated within student's authorized curriculum node)
+  - `chapterId` (string, validated within student's authorized curriculum hierarchy)
+  - `topicId` (string, validated within student's authorized topic hierarchy)
+  - `resourceType` (enum: `notes`, `worksheet`, `important_questions`, `video`, `question_bank`, `summary_sheet`)
+  - `difficultyLevel` (enum: `foundation`, `standard`, `advanced`)
+- **Pagination**: Uniform pagination parameters `page` (default: 1, min: 1) and `pageSize` (default: 20, max: 100).
+- **Sorting**: Deterministic server-side ordering `ORDER BY lr.created_at DESC, lr.id ASC`.
+- **Unenrolled Behavior**: Students without active enrollment safely receive `{ resources: [], pagination: { total: 0, page, pageSize, totalPages: 0, hasNext: false, hasPrev: false } }`.
+- **Response**: Standardized success envelope with `data.resources` array and top-level `pagination` block. Internal fields (e.g. `uploaded_by`) are strictly excluded.
+
+#### 2. Student Learning Resource Detail
+- **Endpoint**: `GET /api/v1/student/resources/:id`
+- **Status**: **IMPLEMENTED (Phase 5.8D)**
+- **Auth / Role**: `requireAuth`, `requireRole('student')` (Strictly student-only access)
+- **Identity Source**: Derived strictly from `req.user.id`
+- **Security Guard**: Resource must be published (`is_published = TRUE`) and must belong to a curriculum node matching the student's active `(session_id, board_id, class_id)`.
+- **Response**: Standardized success envelope returning single resource DTO, or 404 NOT_FOUND (`Learning resource not found.`) if non-existent, unpublished, or outside the student's authorized academic scope.
+
+---
+
+### 18.6 Future / Conceptual Endpoint Specifications (Architectural Blueprint ONLY)
+
+> ⚠️ **NOTICE**: The endpoints detailed below are conceptual architectural designs representing future phase specifications. **None of these routes are implemented in Phase 5.8D.**  
 > **These endpoint examples are illustrative architectural examples only and do not constitute approved feature requirements. Each resource must be reviewed and approved during its implementation phase.**
 
 #### Future Student Resources (`/api/v1/student/*`) — [FUTURE / CONCEPTUAL]
@@ -801,18 +843,22 @@ The following student academic context endpoint is fully implemented and verifie
 | **Phase 5.7A**| Academic Database Schema Implementation | Locked (`6e00f90`) |
 | **Phase 5.8A**| Academic Reference APIs | Locked (`58653ee`) |
 | **Phase 5.8B**| Read-Only Curriculum APIs | Locked (`eabcc19`) |
-| **Phase 5.8C**| **Student Academic Context API** | **CURRENT — Implemented (Active Enrollment Context)** |
-| **Phase 5.8D+**| Learning Resource Management APIs | Future Phase: Resource upload, material attachments |
+| **Phase 5.8C**| Student Academic Context API | Locked (`38f76c6`) |
+| **Phase 5.8D**| **Student Learning Resources APIs** | **CURRENT — Implemented (Read-Only Student Resources)** |
+| **Phase 5.8E+**| Learning Resource Authoring & Management | Future Phase: Upload, edit, delete, S3/CDN streaming |
 | **Phase 6.0+** | Frontend Dashboards & Portal Implementations | Future Phase: Student, Parent, Teacher, Admin dashboards |
 
-### Strict Phase 5.8C Commitments:
-- ✅ Strictly student-only academic context endpoint implemented (`/api/v1/student/academic-context`).
+### Strict Phase 5.8D Commitments:
+- ✅ Strictly student-only learning resource endpoints implemented (`/api/v1/student/resources`, `/api/v1/student/resources/:id`).
 - ✅ Access gated by `requireAuth` and `requireRole('student')`.
 - ✅ Identity derived strictly from `req.user.id`; no client-supplied ID trust.
-- ✅ Uses only existing Phase 5.1 identity and Phase 5.7A academic database tables with explicit column projection (no `SELECT *`).
-- ✅ `student_enrollments.board_id` is authoritative; `batch.board_id` never overrides it.
+- ✅ Academic scope bounded by student's active enrollment session, board, and class.
+- ✅ Published resources only (`is_published = TRUE`) and active curriculum nodes only (`is_active = TRUE`) enforced at SQL query level.
+- ✅ Unenrolled students safely receive empty paginated collections or 404 for detail.
+- ✅ Explicit column projection with internal fields (e.g. `uploaded_by`) strictly hidden. Zero `SELECT *`.
 - ❌ No database tables, migrations, or schemas altered.
 - ❌ No packages installed or dependencies changed.
 - ❌ No frontend pages or dashboards built.
-- ❌ No learning resources, assessments, attendance, fees, dashboards, or admin mutations implemented.
+- ❌ No resource creation, mutation, upload, or deletion endpoints implemented.
+- ❌ No completion tracking, bookmarking, favorites, or ratings implemented.
 - ❌ No automatic Git commits.
