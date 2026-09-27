@@ -1,0 +1,515 @@
+/* ==========================================================================
+   MS Tutorials — Student Portal Stylesheet (Phase 5.10A Foundation)
+   Namespaced under .mst-sp- to prevent any leakage into public marketing styles.
+   ========================================================================== */
+
+@import './variables.css';
+
+/* --------------------------------------------------------------------------
+   1. Skip Navigation Link (Accessibility)
+   -------------------------------------------------------------------------- */
+.mst-sp-skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-4);
+  z-index: var(--z-toast);
+  background-color: var(--primary);
+  color: var(--white);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transition: top var(--transition-fast);
+}
+
+.mst-sp-skip-link:focus-visible {
+  top: var(--space-4);
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* --------------------------------------------------------------------------
+   2. Master Shell Layout
+   -------------------------------------------------------------------------- */
+.mst-sp-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+  font-family: var(--font-body);
+}
+
+.mst-sp-body-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  min-height: calc(100vh - 64px);
+}
+
+.mst-sp-canvas {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px;
+  background-color: var(--bg-subtle);
+  transition: margin-left var(--transition-normal);
+}
+
+.mst-sp-main-content {
+  flex: 1;
+  width: 100%;
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: var(--space-8);
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   3. Student Header
+   -------------------------------------------------------------------------- */
+.mst-sp-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  height: 64px;
+  background-color: var(--white);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.mst-sp-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 var(--space-6);
+  gap: var(--space-4);
+}
+
+.mst-sp-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.mst-sp-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--navy);
+}
+
+.mst-sp-header__logo {
+  height: 36px;
+  width: auto;
+}
+
+.mst-sp-header__portal-tag {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  background-color: var(--light-teal);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.mst-sp-header__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  color: var(--navy);
+  border-radius: var(--radius-sm);
+  padding: 0;
+}
+
+.mst-sp-header__menu-btn:hover {
+  background-color: var(--bg-muted);
+}
+
+.mst-sp-header__menu-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.mst-sp-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.mst-sp-header__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--navy);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.mst-sp-header__user:hover {
+  background-color: var(--bg-muted);
+}
+
+.mst-sp-header__user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--light-teal);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  border: 1px solid #B4ECE5;
+}
+
+.mst-sp-header__user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.mst-sp-header__user-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+}
+
+.mst-sp-header__user-role {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   4. Academic Context Badge / Chip
+   -------------------------------------------------------------------------- */
+.mst-sp-context-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.3rem 0.75rem;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--navy);
+}
+
+.mst-sp-context-chip__indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  flex-shrink: 0;
+}
+
+.mst-sp-context-chip__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+}
+
+.mst-sp-context-chip__session {
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   5. Student Sidebar (Desktop Persistent)
+   -------------------------------------------------------------------------- */
+.mst-sp-sidebar {
+  width: 260px;
+  position: fixed;
+  top: 64px;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-sticky);
+  background-color: var(--white);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: transform var(--transition-normal);
+}
+
+.mst-sp-sidebar__nav {
+  flex: 1;
+  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.mst-sp-sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.mst-sp-sidebar__group-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-subtle);
+  padding: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+.mst-sp-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0.625rem var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--navy);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  background-color: transparent;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.mst-sp-nav-item:hover {
+  background-color: var(--bg-subtle);
+  color: var(--primary);
+}
+
+.mst-sp-nav-item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.mst-sp-nav-item--active {
+  background-color: var(--light-teal);
+  color: var(--primary);
+  font-weight: var(--font-weight-semibold);
+  border-left-color: var(--primary);
+}
+
+.mst-sp-nav-item__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mst-sp-nav-item__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mst-sp-sidebar__footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   6. Mobile / Tablet Navigation Drawer
+   -------------------------------------------------------------------------- */
+.mst-sp-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 37, 69, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-modal-backdrop);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.mst-sp-drawer-backdrop--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mst-sp-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 85vw;
+  background-color: var(--white);
+  z-index: var(--z-modal);
+  transform: translateX(-100%);
+  transition: transform var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+}
+
+.mst-sp-drawer--open {
+  transform: translateX(0);
+}
+
+.mst-sp-drawer__header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mst-sp-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.mst-sp-drawer__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  padding: 0;
+}
+
+.mst-sp-drawer__close-btn:hover {
+  background-color: var(--bg-muted);
+  color: var(--navy);
+}
+
+.mst-sp-drawer__close-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* --------------------------------------------------------------------------
+   7. Placeholder Views & Common UI Shell Helpers
+   -------------------------------------------------------------------------- */
+.mst-sp-page-header {
+  margin-bottom: var(--space-6);
+}
+
+.mst-sp-page-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--navy);
+  margin-bottom: var(--space-1);
+}
+
+.mst-sp-page-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.mst-sp-banner-info {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--light-teal);
+  border: 1px solid #B4ECE5;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--dark-teal);
+  line-height: var(--line-height-normal);
+}
+
+.mst-sp-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+/* --------------------------------------------------------------------------
+   8. Responsive Media Queries
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .mst-sp-canvas {
+    margin-left: 0;
+  }
+
+  .mst-sp-sidebar {
+    display: none; /* Persistent rail hidden on tablet/mobile; mobile drawer handles nav */
+  }
+
+  .mst-sp-header__menu-btn {
+    display: flex;
+  }
+
+  .mst-sp-main-content {
+    padding: var(--space-6);
+  }
+}
+
+@media (max-width: 767px) {
+  .mst-sp-header {
+    height: 56px;
+  }
+
+  .mst-sp-header__inner {
+    padding: 0 var(--space-4);
+  }
+
+  .mst-sp-body-container {
+    min-height: calc(100vh - 56px);
+  }
+
+  .mst-sp-main-content {
+    padding: var(--space-4);
+  }
+
+  .mst-sp-header__context {
+    display: none;
+  }
+
+  .mst-sp-header__user-info {
+    display: none;
+  }
+
+  .mst-sp-page-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .mst-sp-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. Reduced Motion Preference
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .mst-sp-skip-link,
+  .mst-sp-canvas,
+  .mst-sp-sidebar,
+  .mst-sp-drawer,
+  .mst-sp-drawer-backdrop,
+  .mst-sp-nav-item {
+    transition: none !important;
+  }
+}

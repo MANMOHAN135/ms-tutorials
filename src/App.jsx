@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
@@ -14,10 +14,33 @@ import Select from './components/Select.jsx';
 import Textarea from './components/Textarea.jsx';
 import Badge from './components/Badge.jsx';
 import EmptyState from './components/EmptyState.jsx';
+import StudentPortalLayout from './layouts/StudentPortalLayout.jsx';
+import StudentLogin from './student/pages/StudentLogin.jsx';
 import { Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState('/');
+  const [currentPath, setCurrentPath] = useState(() => {
+    if (typeof window !== 'undefined' && window.location.pathname) {
+      return window.location.pathname;
+    }
+    return '/';
+  });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const handleNavigate = (path) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined' && window.history) {
+      window.history.pushState({}, '', path);
+    }
+    setCurrentPath(path);
+  };
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
     title: 'Join MS Tutorials',
@@ -63,10 +86,7 @@ export default function App() {
       return (
         <Home
           onOpenInquiry={handleOpenInquiry}
-          onNavigate={(path) => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setCurrentPath(path);
-          }}
+          onNavigate={handleNavigate}
         />
       );
     }
@@ -76,10 +96,7 @@ export default function App() {
       return (
         <About
           onOpenInquiry={handleOpenInquiry}
-          onNavigate={(path) => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setCurrentPath(path);
-          }}
+          onNavigate={handleNavigate}
         />
       );
     }
@@ -89,10 +106,7 @@ export default function App() {
       return (
         <Programs
           onOpenInquiry={handleOpenInquiry}
-          onNavigate={(path) => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setCurrentPath(path);
-          }}
+          onNavigate={handleNavigate}
         />
       );
     }
@@ -102,10 +116,7 @@ export default function App() {
       return (
         <LearningSystem
           onOpenInquiry={handleOpenInquiry}
-          onNavigate={(path) => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setCurrentPath(path);
-          }}
+          onNavigate={handleNavigate}
         />
       );
     }
@@ -115,10 +126,7 @@ export default function App() {
       return (
         <Resources
           onOpenInquiry={handleOpenInquiry}
-          onNavigate={(path) => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setCurrentPath(path);
-          }}
+          onNavigate={handleNavigate}
         />
       );
     }
@@ -128,10 +136,7 @@ export default function App() {
       return (
         <Contact
           onOpenInquiry={handleOpenInquiry}
-          onNavigate={(path) => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setCurrentPath(path);
-          }}
+          onNavigate={handleNavigate}
         />
       );
     }
@@ -146,10 +151,7 @@ export default function App() {
             <Button
               variant="primary"
               size="md"
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setCurrentPath('/');
-              }}
+              onClick={() => handleNavigate('/')}
             >
               &larr; Return to Home Page
             </Button>
@@ -159,15 +161,26 @@ export default function App() {
     );
   };
 
+  // Route boundary: Isolate student portal views from public website
+  if (currentPath === '/student/login') {
+    return <StudentLogin onNavigate={handleNavigate} />;
+  }
+
+  if (currentPath.startsWith('/student')) {
+    return (
+      <StudentPortalLayout
+        currentPath={currentPath}
+        onNavigate={handleNavigate}
+      />
+    );
+  }
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* 1. Global Navigation */}
       <Navbar
         currentPath={currentPath}
-        onNavigate={(path) => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          setCurrentPath(path);
-        }}
+        onNavigate={handleNavigate}
         ctaLabel="Join MS Tutorials"
         onCtaClick={() => handleOpenInquiry({ type: 'enroll', metadata: 'Navbar CTA' })}
       />
@@ -261,12 +274,7 @@ export default function App() {
       </Modal>
 
       {/* 4. Global Footer */}
-      <Footer
-        onNavigate={(path) => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          setCurrentPath(path);
-        }}
-      />
+      <Footer onNavigate={handleNavigate} />
     </div>
   );
 }
