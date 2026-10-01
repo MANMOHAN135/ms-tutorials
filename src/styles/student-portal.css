@@ -532,7 +532,161 @@
 }
 
 /* --------------------------------------------------------------------------
-   8. Responsive Media Queries
+   9. Resource Library & Detail Layouts (Phase 5.10D)
+   -------------------------------------------------------------------------- */
+.mst-sp-resource-library {
+  width: 100%;
+}
+
+.mst-sp-resource-filters {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.mst-sp-resource-filters__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.mst-sp-resource-filters__controls .mst-form-group {
+  margin-bottom: 0;
+  min-width: 180px;
+}
+
+.mst-sp-resource-filters__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mst-sp-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.mst-sp-resource-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.mst-sp-resource-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.mst-sp-resource-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.mst-sp-resource-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background-color: var(--light-teal);
+  color: var(--primary);
+}
+
+.mst-sp-resource-card__body {
+  flex: 1;
+  margin-bottom: var(--space-4);
+}
+
+.mst-sp-resource-card__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  margin: 0 0 var(--space-2) 0;
+  line-height: var(--line-height-tight);
+}
+
+.mst-sp-resource-card__description {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mst-sp-resource-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.mst-sp-resource-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.mst-sp-resource-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background-color: var(--bg-muted);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm);
+}
+
+.mst-sp-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  margin-top: var(--space-6);
+}
+
+.mst-sp-pagination__info {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.mst-sp-resource-detail {
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   10. Responsive Media Queries
    -------------------------------------------------------------------------- */
 @media (max-width: 1023px) {
   .mst-sp-canvas {
@@ -594,6 +748,27 @@
   .mst-sp-enrollment-grid {
     grid-template-columns: 1fr;
     gap: var(--space-3);
+  }
+
+  .mst-sp-resource-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+
+  .mst-sp-resource-filters__controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+
+  .mst-sp-resource-filters__controls .mst-form-group {
+    min-width: 100%;
+  }
+
+  .mst-sp-resource-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
 }
 

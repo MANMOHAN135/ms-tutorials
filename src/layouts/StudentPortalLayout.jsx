@@ -4,6 +4,8 @@ import StudentSidebar from '../student/components/StudentSidebar.jsx';
 import StudentMobileNavigation from '../student/components/StudentMobileNavigation.jsx';
 import StudentDashboard from '../student/pages/StudentDashboard.jsx';
 import StudentProfile from '../student/pages/StudentProfile.jsx';
+import StudentResourceLibrary from '../student/pages/StudentResourceLibrary.jsx';
+import StudentResourceDetail from '../student/pages/StudentResourceDetail.jsx';
 import StudentPagePlaceholder from '../student/components/StudentPagePlaceholder.jsx';
 import StudentProtectedRoute from '../student/components/StudentProtectedRoute.jsx';
 import { StudentProvider } from '../student/contexts/StudentContext.jsx';
@@ -69,22 +71,14 @@ export default function StudentPortalLayout({ currentPath, onNavigate }) {
     }
 
     if (currentPath === '/student/resources') {
-      return (
-        <StudentPagePlaceholder
-          title="Learning Resources Library"
-          description="Curriculum-scoped notes, practice worksheets, question banks, and video walkthroughs mapped to CBSE and ICSE chapters and topics."
-          phaseBadge="Phase 5.10B / 5.10C Resource Integration"
-          onNavigate={onNavigate}
-        />
-      );
+      return <StudentResourceLibrary onNavigate={onNavigate} />;
     }
 
     if (currentPath.startsWith('/student/resources/')) {
+      const resourceId = currentPath.replace('/student/resources/', '').trim();
       return (
-        <StudentPagePlaceholder
-          title="Resource Asset Detail & Viewer"
-          description="Dedicated asset viewer and study document reader connected to verified resource IDs."
-          phaseBadge="Phase 5.10C Resource Viewer"
+        <StudentResourceDetail
+          resourceId={resourceId}
           onNavigate={onNavigate}
         />
       );
