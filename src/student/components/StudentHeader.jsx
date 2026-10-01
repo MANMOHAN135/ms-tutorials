@@ -2,6 +2,7 @@ import React from 'react';
 import { Menu, User, LogOut } from 'lucide-react';
 import StudentContextBadge from './StudentContextBadge.jsx';
 import useAuth from '../../hooks/useAuth.js';
+import useStudent from '../hooks/useStudent.js';
 
 /**
  * Top Application Header for Student Portal
@@ -19,6 +20,7 @@ export default function StudentHeader({
   isMobileNavOpen = false,
 }) {
   const { user, logout } = useAuth();
+  const { profile, enrollment, isLoading: isStudentLoading } = useStudent();
 
   const handleLogout = async () => {
     await logout();
@@ -27,11 +29,33 @@ export default function StudentHeader({
     }
   };
 
-  const displayName = user?.name || 'Student Portal';
-  const displaySub = user?.identifier
-    ? `ID: ${user.identifier}`
-    : (user?.role ? `Role: ${user.role}` : 'Enrolled Student');
-  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : null;
+  const displayName = profile?.name || user?.name || 'Student Portal';
+  const displaySub = profile?.admissionNumber
+    ? `Adm: ${profile.admissionNumber}`
+    : (user?.identifier ? `ID: ${user.identifier}` : 'Enrolled Student');
+  const userInitial = (profile?.name || user?.name)
+    ? (profile?.name || user?.name).charAt(0).toUpperCase()
+    : null;
+
+  // Derive dynamic context badge copy
+  let contextTitle = 'Academic Session';
+  let contextSubtitle = 'Academic Context';
+  let isEnrolled = true;
+
+  if (isStudentLoading) {
+    contextTitle = 'Loading...';
+    contextSubtitle = 'Academic Context';
+  } else if (enrollment) {
+    contextTitle = enrollment.session?.displayName || enrollment.session?.sessionCode || 'Active Session';
+    const boardCode = enrollment.board?.code || '';
+    const classCode = enrollment.class?.displayName || '';
+    const batchName = enrollment.batch?.name ? ` • ${enrollment.batch.name}` : '';
+    contextSubtitle = `${boardCode} ${classCode}${batchName}`.trim() || 'Enrolled Student';
+  } else {
+    contextTitle = 'No Active Session';
+    contextSubtitle = 'Enrollment Pending';
+    isEnrolled = false;
+  }
 
   return (
     <header className="mst-sp-header" role="banner">
@@ -69,8 +93,9 @@ export default function StudentHeader({
         {/* Center Section: Academic Context Chip */}
         <div className="mst-sp-header__context">
           <StudentContextBadge
-            title="Academic Session 2026-27"
-            subtitle="CBSE Class 10 Achievers"
+            title={contextTitle}
+            subtitle={contextSubtitle}
+            isEnrolled={isEnrolled}
           />
         </div>
 

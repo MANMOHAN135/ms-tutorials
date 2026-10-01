@@ -12,20 +12,28 @@ import React from 'react';
  * @param {string} [props.className='']
  */
 export default function StudentContextBadge({
-  title = 'Academic Session 2026-27',
-  subtitle = 'CBSE Class 10',
+  title = 'Academic Session',
+  subtitle = 'Academic Context',
+  isEnrolled = true,
   className = '',
 }) {
   return (
     <div
-      className={`mst-sp-context-chip ${className}`}
+      className={`mst-sp-context-chip ${!isEnrolled ? 'mst-sp-context-chip--unassigned' : ''} ${className}`}
       role="status"
-      aria-label={`Current academic context: ${subtitle}, ${title}`}
+      aria-label={`Academic context: ${subtitle}, ${title}`}
     >
-      <span className="mst-sp-context-chip__indicator" aria-hidden="true" />
+      <span
+        className={`mst-sp-context-chip__indicator ${!isEnrolled ? 'mst-sp-context-chip__indicator--amber' : ''}`}
+        aria-hidden="true"
+      />
       <span className="mst-sp-context-chip__title">{subtitle}</span>
-      <span className="mst-sp-context-chip__session" aria-hidden="true">•</span>
-      <span className="mst-sp-context-chip__session">{title}</span>
+      {title && (
+        <>
+          <span className="mst-sp-context-chip__session" aria-hidden="true">•</span>
+          <span className="mst-sp-context-chip__session">{title}</span>
+        </>
+      )}
     </div>
   );
 }

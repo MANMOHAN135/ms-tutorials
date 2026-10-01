@@ -14,6 +14,7 @@
  */
 
 let inMemoryAccessToken = null;
+let refreshPromise = null;
 
 export const authService = {
   /**
@@ -79,29 +80,43 @@ export const authService = {
 
   /**
    * Exchanges HttpOnly refresh cookie for a fresh access token.
+   * Implements shared-promise deduplication to prevent concurrent refresh calls.
    * @returns {Promise<{ accessToken: string }>}
    */
   async refresh() {
-    const res = await fetch('/api/auth/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      inMemoryAccessToken = null;
-      const errorMsg = data.error || 'Session expired or refresh token invalid.';
-      const err = new Error(errorMsg);
-      err.status = res.status;
-      throw err;
+    // If a refresh request is already in-flight, return the existing promise
+    if (refreshPromise) {
+      return refreshPromise;
     }
 
-    inMemoryAccessToken = data.accessToken || null;
-    return data;
+    refreshPromise = (async () => {
+      try {
+        const res = await fetch('/api/auth/refresh', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          inMemoryAccessToken = null;
+          const errorMsg = data.error || 'Session expired or refresh token invalid.';
+          const err = new Error(errorMsg);
+          err.status = res.status;
+          throw err;
+        }
+
+        inMemoryAccessToken = data.accessToken || null;
+        return data;
+      } finally {
+        refreshPromise = null;
+      }
+    })();
+
+    return refreshPromise;
   },
 
   /**

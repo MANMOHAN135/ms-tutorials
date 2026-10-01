@@ -217,6 +217,15 @@
   flex-shrink: 0;
 }
 
+.mst-sp-context-chip__indicator--amber {
+  background-color: var(--warning);
+}
+
+.mst-sp-context-chip--unassigned {
+  background-color: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+
 .mst-sp-context-chip__title {
   font-weight: var(--font-weight-semibold);
   color: var(--navy);
@@ -437,11 +446,89 @@
   line-height: var(--line-height-normal);
 }
 
+.mst-sp-banner-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+  font-size: var(--font-size-sm);
+  color: #78350F;
+  line-height: var(--line-height-normal);
+}
+
 .mst-sp-dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-6);
   margin-top: var(--space-6);
+}
+
+/* --------------------------------------------------------------------------
+   8. Key-Value & Detailed Card Layouts (Phase 5.10C)
+   -------------------------------------------------------------------------- */
+.mst-sp-kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mst-sp-kv-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mst-sp-kv-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.mst-sp-kv-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mst-sp-kv-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--navy);
+  word-break: break-word;
+}
+
+.mst-sp-profile-page {
+  width: 100%;
+}
+
+.mst-sp-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+.mst-sp-enrollment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+}
+
+.mst-sp-enrollment-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 /* --------------------------------------------------------------------------
@@ -497,6 +584,16 @@
   .mst-sp-dashboard-grid {
     grid-template-columns: 1fr;
     gap: var(--space-4);
+  }
+
+  .mst-sp-profile-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .mst-sp-enrollment-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
   }
 }
 
