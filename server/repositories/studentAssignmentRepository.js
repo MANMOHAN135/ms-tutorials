@@ -53,7 +53,7 @@ function buildStudentAssignmentWhere(studentId, filters = {}) {
 
   if (filters.status) {
     if (filters.status === 'pending') {
-      whereClauses.push("sa.status IN ('assigned', 'in_progress', 'resubmission_required')");
+      whereClauses.push("sa.status IN ('assigned', 'in_progress', 'resubmission_requested')");
     } else if (filters.status === 'submitted') {
       whereClauses.push("sa.status = 'submitted'");
     } else if (filters.status === 'evaluated') {
@@ -123,7 +123,7 @@ export async function listStudentAssignments(studentId, filters = {}, pagination
     LEFT JOIN topics t ON a.topic_id = t.id
     ${whereSql}
     ORDER BY
-      CASE WHEN sa.status IN ('assigned', 'in_progress', 'resubmission_required') THEN 1 ELSE 2 END,
+      CASE WHEN sa.status IN ('assigned', 'in_progress', 'resubmission_requested') THEN 1 ELSE 2 END,
       a.due_at ASC,
       sa.updated_at DESC
     LIMIT ? OFFSET ?

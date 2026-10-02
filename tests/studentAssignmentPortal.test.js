@@ -312,4 +312,18 @@ test('--- Phase 5.10E-C: Student Portal Assignment UI Integration Test Suite ---
     assert.match(appContent, /currentPath === '\/student\/login'/);
     assert.match(appContent, /currentPath\.startsWith\('\/student'\)/);
   });
+
+  await t.test('14. resubmission_requested is used consistently with zero stale resubmission_required references', async () => {
+    const assignmentsPage = fs.readFileSync('src/student/pages/StudentAssignments.jsx', 'utf-8');
+    const detailPage = fs.readFileSync('src/student/pages/StudentAssignmentDetail.jsx', 'utf-8');
+    const repoContent = fs.readFileSync('server/repositories/studentAssignmentRepository.js', 'utf-8');
+
+    assert.doesNotMatch(assignmentsPage, /resubmission_required/);
+    assert.doesNotMatch(detailPage, /resubmission_required/);
+    assert.doesNotMatch(repoContent, /resubmission_required/);
+
+    assert.match(assignmentsPage, /resubmission_requested/);
+    assert.match(detailPage, /resubmission_requested/);
+    assert.match(repoContent, /resubmission_requested/);
+  });
 });

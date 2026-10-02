@@ -24,10 +24,14 @@ import {
 
 const STATUS_FILTER_OPTIONS = [
   { value: '', label: 'All Statuses' },
-  { value: 'pending', label: 'To Do (Assigned / In Progress)' },
+  { value: 'pending', label: 'To Do (Assigned / In Progress / Rework)' },
+  { value: 'assigned', label: 'Assigned' },
+  { value: 'in_progress', label: 'In Progress' },
   { value: 'submitted', label: 'Submitted' },
+  { value: 'resubmitted', label: 'Resubmitted' },
   { value: 'resubmission_requested', label: 'Rework Requested' },
-  { value: 'evaluated', label: 'Evaluated / Completed' },
+  { value: 'evaluated', label: 'Evaluated' },
+  { value: 'completed', label: 'Completed' },
 ];
 
 /**

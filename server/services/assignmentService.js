@@ -7,7 +7,7 @@ const ALLOWED_ASSIGNMENT_TYPES = ['homework', 'worksheet', 'practice_set', 'proj
 const ALLOWED_LATE_POLICIES = ['reject_late', 'grace_period', 'allow_late', 'reject', 'allow_flagged'];
 const ALLOWED_RESUBMISSION_POLICIES = ['none', 'single', 'multiple'];
 const ALLOWED_TARGET_TYPES = ['batch', 'class', 'student'];
-const ALLOWED_GRADING_STATUSES = ['evaluated', 'resubmission_requested', 'resubmission_required', 'needs_improvement'];
+const ALLOWED_GRADING_STATUSES = ['evaluated', 'resubmission_requested', 'needs_improvement'];
 const ALLOWED_ASSIGNMENT_STATUSES = ['draft', 'published', 'closed', 'archived'];
 
 /**
@@ -479,8 +479,6 @@ export async function evaluateSubmission(userId, userRole, submissionId, evalDat
     throw error;
   }
 
-  const normalizedGradingStatus = gradingStatus === 'resubmission_required' ? 'resubmission_requested' : gradingStatus;
-
   // 4. Save evaluation
   const evaluationId = crypto.randomUUID();
   const evaluationRecord = {
@@ -488,7 +486,7 @@ export async function evaluateSubmission(userId, userRole, submissionId, evalDat
     submissionId,
     evaluatedBy: teacherId,
     scoreAwarded,
-    gradingStatus: normalizedGradingStatus,
+    gradingStatus,
     feedback,
     evaluatedAt: new Date(),
   };
@@ -496,8 +494,8 @@ export async function evaluateSubmission(userId, userRole, submissionId, evalDat
   await studentAssignmentRepo.createOrUpdateEvaluation(evaluationRecord);
 
   // 5. Update student assignment status
-  const isCompleted = normalizedGradingStatus === 'evaluated';
-  const newStatus = normalizedGradingStatus === 'resubmission_requested' ? 'resubmission_requested' : 'completed';
+  const isCompleted = gradingStatus === 'evaluated';
+  const newStatus = gradingStatus === 'resubmission_requested' ? 'resubmission_requested' : 'completed';
   await studentAssignmentRepo.updateStudentAssignmentStatus(
     submission.student_assignment_id,
     newStatus,

@@ -151,7 +151,7 @@ export async function submitAssignment(userId, studentAssignmentId, submissionDa
   const attemptCount = existingSubmissions.length;
 
   if (attemptCount > 0) {
-    if (assignment.status !== 'resubmission_requested' && assignment.status !== 'resubmission_required') {
+    if (assignment.status !== 'resubmission_requested') {
       const error = new Error('Assignment has already been submitted and is awaiting evaluation or completed.');
       error.statusCode = 400;
       error.code = 'ALREADY_SUBMITTED';
