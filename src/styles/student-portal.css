@@ -770,6 +770,29 @@
     grid-template-columns: 1fr;
     gap: var(--space-4);
   }
+
+  .mst-sp-assignment-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. Student Assignment Styles (Phase 5.10E-C)
+   -------------------------------------------------------------------------- */
+.mst-sp-assignment-card {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.mst-sp-assignment-card:hover {
+  border-color: var(--primary) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.mst-sp-feedback-box {
+  background-color: #ecfdf5;
+  border: 1px solid #10b981;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
 }
 
 /* --------------------------------------------------------------------------

@@ -17,6 +17,7 @@ import {
   Calendar,
   School,
   IdCard,
+  FileCheck2,
 } from 'lucide-react';
 
 /**
@@ -237,33 +238,25 @@ export default function StudentDashboard({ onNavigate }) {
           </p>
         </Card>
 
-        {/* Card 4: Upcoming Subsystems */}
+        {/* Card 4: Assignments & Practice */}
         <Card
-          title="Upcoming Subsystems"
-          subtitle="Roadmap Phase 6+"
-          icon={<Layers size={20} />}
+          title="Assignments & Practice"
+          subtitle="Homework & Faculty Feedback"
+          icon={<FileCheck2 size={20} />}
           footer={
-            <Badge variant="neutral">Scheduled In Phase 6+</Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              rightIcon={<ArrowRight size={14} />}
+              onClick={() => onNavigate('/student/assignments')}
+            >
+              Open Assignments
+            </Button>
           }
         >
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-            <li style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <CheckCircle2 size={14} color="var(--primary)" />
-              <span>Assignments &amp; Practice Submission</span>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <CheckCircle2 size={14} color="var(--primary)" />
-              <span>Periodic Tests &amp; Performance Ledger</span>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <CheckCircle2 size={14} color="var(--primary)" />
-              <span>Topic Mastery &amp; Diagnostic Progress</span>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <CheckCircle2 size={14} color="var(--primary)" />
-              <span>Session Attendance &amp; Faculty Notices</span>
-            </li>
-          </ul>
+          <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>
+            Structured problem sets, homework submissions, and detailed teacher evaluations with qualitative revision guidance.
+          </p>
         </Card>
       </div>
     </div>

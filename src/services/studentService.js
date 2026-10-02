@@ -191,6 +191,157 @@ export const studentService = {
 
     return data.data?.subjects || [];
   },
+
+  /**
+   * Fetches paginated assignments for the authenticated student.
+   * Endpoint: GET /api/v1/student/assignments
+   * 
+   * Supported filters (strictly aligned with Phase 5.10E-B backend):
+   *   - status ('assigned' | 'in_progress' | 'submitted' | 'resubmission_requested' | 'resubmitted' | 'completed' | 'pending')
+   *   - subjectId (UUID)
+   *   - chapterId (UUID)
+   *   - page (number >= 1)
+   *   - pageSize (number 1..100)
+   * 
+   * @param {Object} [filters={}]
+   * @param {Object} [pagination={}]
+   * @returns {Promise<{ assignments: Array<Object>, pagination: Object }>}
+   */
+  async getAssignments(filters = {}, pagination = {}) {
+    const params = new URLSearchParams();
+
+    if (filters.status) params.append('status', filters.status);
+    if (filters.subjectId) params.append('subjectId', filters.subjectId);
+    if (filters.chapterId) params.append('chapterId', filters.chapterId);
+
+    if (pagination.page) params.append('page', String(pagination.page));
+    if (pagination.pageSize) params.append('pageSize', String(pagination.pageSize));
+
+    const queryString = params.toString();
+    const endpoint = `/api/v1/student/assignments${queryString ? `?${queryString}` : ''}`;
+
+    const res = await authService.authFetch(endpoint, {
+      method: 'GET',
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const errorMsg = data.error?.message || data.error || 'Failed to retrieve student assignments.';
+      const err = new Error(errorMsg);
+      err.status = res.status;
+      err.code = data.error?.code;
+      throw err;
+    }
+
+    return {
+      assignments: data.data?.assignments || [],
+      pagination: data.pagination || {
+        page: 1,
+        pageSize: 20,
+        total: 0,
+        totalPages: 0,
+      },
+    };
+  },
+
+  /**
+   * Fetches full details of a specific assignment instance for the authenticated student.
+   * Endpoint: GET /api/v1/student/assignments/:id
+   * 
+   * @param {string} id - Student assignment UUID
+   * @returns {Promise<Object>} Assignment detail object
+   */
+  async getAssignmentById(id) {
+    if (!id || typeof id !== 'string') {
+      const err = new Error('Assignment ID is required.');
+      err.status = 400;
+      throw err;
+    }
+
+    const res = await authService.authFetch(`/api/v1/student/assignments/${encodeURIComponent(id)}`, {
+      method: 'GET',
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const errorMsg = data.error?.message || data.error || 'Failed to retrieve assignment details.';
+      const err = new Error(errorMsg);
+      err.status = res.status;
+      err.code = data.error?.code;
+      throw err;
+    }
+
+    return data.data?.assignment || null;
+  },
+
+  /**
+   * Submits student work for an assignment.
+   * Endpoint: POST /api/v1/student/assignments/:id/submissions
+   * 
+   * @param {string} id - Student assignment UUID
+   * @param {Object} submissionData - Submission payload
+   * @returns {Promise<Object>} Created submission object
+   */
+  async submitAssignment(id, submissionData = {}) {
+    if (!id || typeof id !== 'string') {
+      const err = new Error('Assignment ID is required.');
+      err.status = 400;
+      throw err;
+    }
+
+    const res = await authService.authFetch(`/api/v1/student/assignments/${encodeURIComponent(id)}/submissions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submissionData),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const errorMsg = data.error?.message || data.error || 'Failed to submit assignment.';
+      const err = new Error(errorMsg);
+      err.status = res.status;
+      err.code = data.error?.code;
+      throw err;
+    }
+
+    return data.data?.submission || null;
+  },
+
+  /**
+   * Fetches submission history for a student assignment.
+   * Endpoint: GET /api/v1/student/assignments/:id/submissions
+   * 
+   * @param {string} id - Student assignment UUID
+   * @returns {Promise<Array<Object>>} List of submissions
+   */
+  async getSubmissions(id) {
+    if (!id || typeof id !== 'string') {
+      const err = new Error('Assignment ID is required.');
+      err.status = 400;
+      throw err;
+    }
+
+    const res = await authService.authFetch(`/api/v1/student/assignments/${encodeURIComponent(id)}/submissions`, {
+      method: 'GET',
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const errorMsg = data.error?.message || data.error || 'Failed to retrieve submission history.';
+      const err = new Error(errorMsg);
+      err.status = res.status;
+      err.code = data.error?.code;
+      throw err;
+    }
+
+    return data.data?.submissions || [];
+  },
 };
 
 export default studentService;

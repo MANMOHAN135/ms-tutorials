@@ -6,6 +6,8 @@ import StudentDashboard from '../student/pages/StudentDashboard.jsx';
 import StudentProfile from '../student/pages/StudentProfile.jsx';
 import StudentResourceLibrary from '../student/pages/StudentResourceLibrary.jsx';
 import StudentResourceDetail from '../student/pages/StudentResourceDetail.jsx';
+import StudentAssignments from '../student/pages/StudentAssignments.jsx';
+import StudentAssignmentDetail from '../student/pages/StudentAssignmentDetail.jsx';
 import StudentPagePlaceholder from '../student/components/StudentPagePlaceholder.jsx';
 import StudentProtectedRoute from '../student/components/StudentProtectedRoute.jsx';
 import { StudentProvider } from '../student/contexts/StudentContext.jsx';
@@ -40,6 +42,8 @@ export default function StudentPortalLayout({ currentPath, onNavigate }) {
       pageTitle = 'Resource Detail | MS Tutorials Student Portal';
     } else if (currentPath === '/student/assignments') {
       pageTitle = 'Assignments | MS Tutorials Student Portal';
+    } else if (currentPath.startsWith('/student/assignments/')) {
+      pageTitle = 'Assignment Detail | MS Tutorials Student Portal';
     } else if (currentPath === '/student/tests') {
       pageTitle = 'Tests & Assessments | MS Tutorials Student Portal';
     } else if (currentPath === '/student/results') {
@@ -85,11 +89,14 @@ export default function StudentPortalLayout({ currentPath, onNavigate }) {
     }
 
     if (currentPath === '/student/assignments') {
+      return <StudentAssignments onNavigate={onNavigate} />;
+    }
+
+    if (currentPath.startsWith('/student/assignments/')) {
+      const assignmentId = currentPath.replace('/student/assignments/', '').trim();
       return (
-        <StudentPagePlaceholder
-          title="Assignments & Practice"
-          description="Periodic homework, worksheet submission, and teacher evaluation feedback."
-          phaseBadge="Phase 6+ Roadmap Subsystem"
+        <StudentAssignmentDetail
+          assignmentId={assignmentId}
           onNavigate={onNavigate}
         />
       );

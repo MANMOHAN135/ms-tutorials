@@ -25,7 +25,7 @@ export const STUDENT_NAV_GROUPS = [
     title: 'My Learning',
     items: [
       { id: 'resources', label: 'Resources', path: '/student/resources', icon: BookOpen },
-      { id: 'assignments', label: 'Assignments', path: '/student/assignments', icon: FileCheck2, badge: 'Soon' },
+      { id: 'assignments', label: 'Assignments', path: '/student/assignments', icon: FileCheck2 },
       { id: 'tests', label: 'Tests & Results', path: '/student/tests', icon: Award, badge: 'Soon' },
       { id: 'progress', label: 'Progress', path: '/student/progress', icon: TrendingUp, badge: 'Soon' },
     ],
