@@ -95,6 +95,39 @@ const ACADEMIC_UNIQUE_CONSTRAINTS = [
   { name: 'uq_student_session_class', pattern: /uq_student_session_class\s*\(\s*student_id\s*,\s*session_id\s*,\s*class_id\s*\)/i }
 ];
 
+// =============================================================================
+// ASSIGNMENT DOMAIN (Phase 5.10E-B - 6 Tables)
+// =============================================================================
+const ASSIGNMENT_TABLES = [
+  'assignments',
+  'assignment_targets',
+  'student_assignments',
+  'submissions',
+  'submission_attachments',
+  'evaluations'
+];
+
+const ASSIGNMENT_FOREIGN_KEYS = [
+  { table: 'assignments', refTable: 'curriculum_nodes', col: 'curriculum_node_id' },
+  { table: 'assignments', refTable: 'chapters', col: 'chapter_id, curriculum_node_id' },
+  { table: 'assignments', refTable: 'topics', col: 'topic_id, chapter_id' },
+  { table: 'assignments', refTable: 'users', col: 'created_by' },
+  { table: 'assignment_targets', refTable: 'assignments', col: 'assignment_id' },
+  { table: 'student_assignments', refTable: 'assignments', col: 'assignment_id' },
+  { table: 'student_assignments', refTable: 'students', col: 'student_id' },
+  { table: 'submissions', refTable: 'student_assignments', col: 'student_assignment_id' },
+  { table: 'submission_attachments', refTable: 'submissions', col: 'submission_id' },
+  { table: 'evaluations', refTable: 'submissions', col: 'submission_id' },
+  { table: 'evaluations', refTable: 'teachers', col: 'evaluated_by' }
+];
+
+const ASSIGNMENT_UNIQUE_CONSTRAINTS = [
+  { name: 'uq_asgn_target', pattern: /uq_asgn_target\s*\(\s*assignment_id\s*,\s*target_type\s*,\s*target_id\s*\)/i },
+  { name: 'uq_student_assignment', pattern: /uq_student_assignment\s*\(\s*assignment_id\s*,\s*student_id\s*\)/i },
+  { name: 'uq_submission_attempt', pattern: /uq_submission_attempt\s*\(\s*student_assignment_id\s*,\s*attempt_number\s*\)/i },
+  { name: 'uq_evaluation_submission', pattern: /uq_evaluation_submission\s*\(\s*submission_id\s*\)/i }
+];
+
 function validateIdentitySqlFile(filePath) {
   console.log(`\n--- Validating Identity Schema: ${path.relative(process.cwd(), filePath)} ---`);
   if (!fs.existsSync(filePath)) {
@@ -259,6 +292,79 @@ function validateAcademicSqlFile(filePath) {
   return true;
 }
 
+function validateAssignmentSqlFile(filePath) {
+  console.log(`\n--- Validating Assignment Schema: ${path.relative(process.cwd(), filePath)} ---`);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`File not found: ${filePath}`);
+  }
+
+  const content = fs.readFileSync(filePath, 'utf-8');
+  let errors = [];
+
+  // 1. Check all 6 assignment tables defined
+  for (const table of ASSIGNMENT_TABLES) {
+    const tableRegex = new RegExp(`CREATE TABLE IF NOT EXISTS\\s+${table}\\s*\\(`, 'i');
+    if (!tableRegex.test(content)) {
+      errors.push(`Missing assignment table definition: ${table}`);
+    } else {
+      console.log(`  ✓ Table defined: ${table}`);
+    }
+  }
+
+  // 2. Check primary keys (UUID VARCHAR(36))
+  for (const table of ASSIGNMENT_TABLES) {
+    const pkPattern = new RegExp(`CREATE TABLE IF NOT EXISTS\\s+${table}[\\s\\S]*?id\\s+VARCHAR\\(36\\)\\s+NOT\\s+NULL[\\s\\S]*?PRIMARY\\s+KEY\\s*\\(\\s*id\\s*\\)`, 'i');
+    if (!pkPattern.test(content)) {
+      errors.push(`Missing or invalid UUID primary key for table: ${table}`);
+    } else {
+      console.log(`  ✓ Primary key verified (UUID): ${table}(id)`);
+    }
+  }
+
+  // 3. Check foreign keys
+  for (const fk of ASSIGNMENT_FOREIGN_KEYS) {
+    const isComposite = fk.col.includes(',');
+    let fkPattern;
+    if (isComposite) {
+      const escapedCol = fk.col.replace(/,\s*/g, '\\s*,\\s*');
+      fkPattern = new RegExp(`FOREIGN\\s+KEY\\s*\\(\\s*${escapedCol}\\s*\\)\\s*REFERENCES\\s+${fk.refTable}\\s*\\(\\s*id(?:\\s*,\\s*\\w+)+\\s*\\)`, 'i');
+    } else {
+      fkPattern = new RegExp(`FOREIGN\\s+KEY\\s*\\(\\s*${fk.col}\\s*\\)\\s*REFERENCES\\s+${fk.refTable}\\s*\\(id\\)`, 'i');
+    }
+
+    if (!fkPattern.test(content)) {
+      errors.push(`Missing foreign key constraint: ${fk.table}(${fk.col}) -> ${fk.refTable}`);
+    } else {
+      console.log(`  ✓ Foreign key verified: ${fk.table}(${fk.col}) -> ${fk.refTable}`);
+    }
+  }
+
+  // 4. Check unique constraints
+  for (const uq of ASSIGNMENT_UNIQUE_CONSTRAINTS) {
+    if (!uq.pattern.test(content)) {
+      errors.push(`Missing unique constraint: ${uq.name}`);
+    } else {
+      console.log(`  ✓ Unique constraint verified: ${uq.name}`);
+    }
+  }
+
+  // 5. Check hierarchical check constraint on assignments
+  if (!/chk_assignments_hierarchy\s+CHECK\s*\(\s*topic_id\s+IS\s+NULL\s+OR\s+chapter_id\s+IS\s+NOT\s+NULL\s*\)/i.test(content)) {
+    errors.push('Missing check constraint chk_assignments_hierarchy on assignments');
+  } else {
+    console.log('  ✓ Check constraint verified: chk_assignments_hierarchy');
+  }
+
+  if (errors.length > 0) {
+    console.error(`Assignment validation failed with ${errors.length} error(s):`);
+    errors.forEach(err => console.error(`  ✗ ${err}`));
+    return false;
+  }
+
+  console.log(`  ✓ Assignment constraints, keys, and definitions verified successfully.`);
+  return true;
+}
+
 try {
   // Validate Identity Domain (Phase 5.1)
   const identitySchemaPath = path.join(__dirname, 'schema', 'identity.sql');
@@ -272,12 +378,19 @@ try {
   const academicSchemaValid = validateAcademicSqlFile(academicSchemaPath);
   const academicMigrationValid = validateAcademicSqlFile(academicMigrationPath);
 
-  if (identitySchemaValid && identityMigrationValid && academicSchemaValid && academicMigrationValid) {
-    const totalTables = IDENTITY_TABLES.length + ACADEMIC_TABLES.length;
+  // Validate Assignment Domain (Phase 5.10E-B)
+  const assignmentSchemaPath = path.join(__dirname, 'schema', 'assignment.sql');
+  const assignmentMigrationPath = path.join(__dirname, 'migrations', '003_create_assignment_tables.sql');
+  const assignmentSchemaValid = validateAssignmentSqlFile(assignmentSchemaPath);
+  const assignmentMigrationValid = validateAssignmentSqlFile(assignmentMigrationPath);
+
+  if (identitySchemaValid && identityMigrationValid && academicSchemaValid && academicMigrationValid && assignmentSchemaValid && assignmentMigrationValid) {
+    const totalTables = IDENTITY_TABLES.length + ACADEMIC_TABLES.length + ASSIGNMENT_TABLES.length;
     console.log('\n=============================================================================');
     console.log(`✅ DATABASE SCHEMA VALIDATION PASSED (Total: ${totalTables} Tables Verified)`);
     console.log(`   - Identity Domain (Phase 5.1): ${IDENTITY_TABLES.length} tables`);
     console.log(`   - Academic Domain (Phase 5.7A): ${ACADEMIC_TABLES.length} tables`);
+    console.log(`   - Assignment Domain (Phase 5.10E-B): ${ASSIGNMENT_TABLES.length} tables`);
     console.log('=============================================================================\n');
     process.exit(0);
   } else {

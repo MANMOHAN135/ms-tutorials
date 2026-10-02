@@ -4,6 +4,7 @@ import { requireRole } from '../middleware/roleMiddleware.js';
 import { getProfile } from '../controllers/studentController.js';
 import studentAcademicContextRoutes from './studentAcademicContextRoutes.js';
 import studentResourceRoutes from './studentResourceRoutes.js';
+import studentAssignmentRoutes from './studentAssignmentRoutes.js';
 
 const router = Router();
 
@@ -18,5 +19,8 @@ router.use('/', studentAcademicContextRoutes);
 
 // Protected Learning Resource Routes (Phase 5.8D)
 router.use('/', studentResourceRoutes);
+
+// Protected Assignment Routes (Phase 5.10E-B)
+router.use('/', studentAssignmentRoutes);
 
 export default router;
