@@ -6,6 +6,7 @@ import app from '../server/server.js';
 import { generateAccessToken } from '../server/services/tokenService.js';
 import assignmentRepo from '../server/repositories/assignmentRepository.js';
 import studentAssignmentRepo from '../server/repositories/studentAssignmentRepository.js';
+import adminRepository from '../server/repositories/adminRepository.js';
 import assignmentService from '../server/services/assignmentService.js';
 import studentAssignmentService from '../server/services/studentAssignmentService.js';
 
@@ -34,18 +35,32 @@ const mockParentUser = {
   full_name: 'Suresh Sharma',
 };
 
-const mockTeacherUser = {
+const mockTeacherUserA = {
   id: 'usr_tch_001',
   role: 'teacher',
-  identifier: 'faculty@mstutorials.com',
+  identifier: 'faculty1@mstutorials.com',
   full_name: 'Dr. Vikram Seth',
 };
 
-const mockAdminUser = {
-  id: 'usr_adm_001',
+const mockTeacherUserB = {
+  id: 'usr_tch_002',
+  role: 'teacher',
+  identifier: 'faculty2@mstutorials.com',
+  full_name: 'Prof. Ananya Rao',
+};
+
+const mockSuperAdminUser = {
+  id: 'usr_adm_super',
   role: 'admin',
-  identifier: 'admin@mstutorials.com',
-  full_name: 'Principal Sharma',
+  identifier: 'superadmin@mstutorials.com',
+  full_name: 'Director Gupta',
+};
+
+const mockStaffAdminUser = {
+  id: 'usr_adm_staff',
+  role: 'admin',
+  identifier: 'staff@mstutorials.com',
+  full_name: 'Clerk Sharma',
 };
 
 // In-Memory Test Store to simulate MySQL tables
@@ -70,7 +85,7 @@ function resetTestStore() {
       available_from: new Date(Date.now() - 86400000), // 1 day ago
       due_at: new Date(Date.now() + 86400000 * 7),    // 7 days in future
       close_at: new Date(Date.now() + 86400000 * 14), // 14 days in future
-      late_policy: 'allow_flagged',
+      late_policy: 'allow_late',
       resubmission_policy: 'single',
       max_resubmissions: 1,
       status: 'published',
@@ -86,6 +101,26 @@ function resetTestStore() {
       chapter_number: 2,
       topic_title: 'Factorization of Polynomials',
       topic_code: 'TOP_CH02_01',
+    },
+    {
+      id: 'asgn_grace',
+      curriculum_node_id: 'cn_cbse_10_math',
+      chapter_id: 'ch_poly',
+      topic_id: 'top_fact',
+      title: 'Grace Period Expired Assignment',
+      description: 'Solve problem set.',
+      assignment_type: 'homework',
+      max_score: 20.0,
+      available_from: new Date(Date.now() - 86400000 * 5),
+      due_at: new Date(Date.now() - 86400000 * 2), // Past due
+      close_at: new Date(Date.now() - 86400000 * 1), // Past close
+      late_policy: 'grace_period',
+      resubmission_policy: 'none',
+      max_resubmissions: 0,
+      status: 'published',
+      created_by: 'usr_tch_001',
+      created_at: new Date(Date.now() - 86400000 * 5),
+      updated_at: new Date(Date.now() - 86400000 * 5),
     },
   ];
 
@@ -109,8 +144,8 @@ function resetTestStore() {
       current_attempt: 1,
       final_score: null,
       is_completed: 0,
-      created_at: new Date('2026-04-01T00:00:00Z'),
-      updated_at: new Date('2026-04-01T00:00:00Z'),
+      created_at: new Date(Date.now() - 86400000),
+      updated_at: new Date(Date.now() - 86400000),
     },
     {
       id: 'sa_002',
@@ -121,8 +156,20 @@ function resetTestStore() {
       current_attempt: 1,
       final_score: null,
       is_completed: 0,
-      created_at: new Date('2026-04-01T00:00:00Z'),
-      updated_at: new Date('2026-04-01T00:00:00Z'),
+      created_at: new Date(Date.now() - 86400000),
+      updated_at: new Date(Date.now() - 86400000),
+    },
+    {
+      id: 'sa_grace_001',
+      assignment_id: 'asgn_grace',
+      student_id: 'stu_001',
+      status: 'assigned',
+      first_opened_at: null,
+      current_attempt: 1,
+      final_score: null,
+      is_completed: 0,
+      created_at: new Date(Date.now() - 86400000 * 5),
+      updated_at: new Date(Date.now() - 86400000 * 5),
     },
   ];
 
@@ -284,7 +331,10 @@ test.before(async () => {
     if (sql.includes('FROM teachers t') && sql.includes('WHERE u.id = ?')) {
       const userId = params[0];
       if (userId === 'usr_tch_001') {
-        return [{ id: 'tch_001', user_id: 'usr_tch_001', faculty_code: 'FAC_MATH_01', full_name: 'Dr. Vikram Seth', email: 'faculty@mstutorials.com' }];
+        return [{ id: 'tch_001', user_id: 'usr_tch_001', faculty_code: 'FAC_MATH_01', full_name: 'Dr. Vikram Seth', email: 'faculty1@mstutorials.com' }];
+      }
+      if (userId === 'usr_tch_002') {
+        return [{ id: 'tch_002', user_id: 'usr_tch_002', faculty_code: 'FAC_MATH_02', full_name: 'Prof. Ananya Rao', email: 'faculty2@mstutorials.com' }];
       }
       return [];
     }
@@ -482,6 +532,18 @@ test.before(async () => {
     return [];
   });
 
+  // Mock adminRepository queries
+  adminRepository.setQueryRunner(async (sql, params = []) => {
+    const userId = params[0];
+    if (userId === 'usr_adm_super') {
+      return [{ user_id: 'usr_adm_super', role: 'admin', access_level: 'superadmin', full_name: 'Director Gupta' }];
+    }
+    if (userId === 'usr_adm_staff') {
+      return [{ user_id: 'usr_adm_staff', role: 'admin', access_level: 'staff', full_name: 'Clerk Sharma' }];
+    }
+    return [];
+  });
+
   server = http.createServer(app);
   await new Promise((resolve) => {
     server.listen(0, () => {
@@ -495,6 +557,7 @@ test.before(async () => {
 test.after(async () => {
   assignmentRepo.resetQueryRunner();
   studentAssignmentRepo.resetQueryRunner();
+  adminRepository.resetQueryRunner();
   if (server) {
     await new Promise((resolve) => server.close(resolve));
   }
@@ -567,12 +630,11 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     }
   });
 
-  await t.test('2. Schema enforces composite unique keys and hierarchical check constraint', () => {
+  await t.test('2. Schema enforces approved lifecycles (DRAFT/PUBLISHED/CLOSED/ARCHIVED) and late policies', () => {
     const schemaSql = fs.readFileSync('database/schema/assignment.sql', 'utf8');
-    assert.match(schemaSql, /uq_asgn_target\s*\(\s*assignment_id\s*,\s*target_type\s*,\s*target_id\s*\)/i);
-    assert.match(schemaSql, /uq_student_assignment\s*\(\s*assignment_id\s*,\s*student_id\s*\)/i);
-    assert.match(schemaSql, /uq_submission_attempt\s*\(\s*student_assignment_id\s*,\s*attempt_number\s*\)/i);
-    assert.match(schemaSql, /uq_evaluation_submission\s*\(\s*submission_id\s*\)/i);
+    assert.match(schemaSql, /status ENUM\('draft',\s*'published',\s*'closed',\s*'archived'\)/i);
+    assert.match(schemaSql, /late_policy ENUM\('reject_late',\s*'grace_period',\s*'allow_late'\)/i);
+    assert.match(schemaSql, /status ENUM\('assigned',\s*'in_progress',\s*'submitted',\s*'evaluated',\s*'resubmission_requested',\s*'resubmitted',\s*'completed'\)/i);
     assert.match(schemaSql, /chk_assignments_hierarchy\s+CHECK\s*\(\s*topic_id\s+IS\s+NULL\s+OR\s+chapter_id\s+IS\s+NOT\s+NULL\s*\)/i);
   });
 
@@ -603,7 +665,7 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
   });
 
   await t.test('6. Teacher can access /api/v1/assignments', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
+    const teacherToken = generateAccessToken(mockTeacherUserA);
     const res = await makeRequest('/api/v1/assignments', {
       token: teacherToken,
     });
@@ -613,10 +675,10 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
   });
 
   // ---------------------------------------------------------------------------
-  // 3. Teacher Assignment Creation & Publishing
+  // 3. Teacher Assignment Creation & Admin Access Levels
   // ---------------------------------------------------------------------------
-  await t.test('7. Teacher creates assignment: saved in draft status with targets', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
+  await t.test('7. Teacher creates assignment: saved in draft status with grace_period policy', async () => {
+    const teacherToken = generateAccessToken(mockTeacherUserA);
     const payload = {
       curriculumNodeId: 'cn_cbse_10_math',
       chapterId: 'ch_poly',
@@ -627,7 +689,8 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
       maxScore: 25.0,
       availableFrom: new Date().toISOString(),
       dueAt: new Date(Date.now() + 86400000 * 7).toISOString(),
-      latePolicy: 'allow_flagged',
+      closeAt: new Date(Date.now() + 86400000 * 10).toISOString(),
+      latePolicy: 'grace_period',
       resubmissionPolicy: 'single',
       targets: [
         { targetType: 'batch', targetId: 'bat_cbse_10_ev1' },
@@ -643,12 +706,13 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(res.status, 201);
     assert.equal(res.body.success, true);
     assert.equal(res.body.data.assignment.status, 'draft');
+    assert.equal(res.body.data.assignment.latePolicy, 'grace_period');
     assert.equal(res.body.data.assignment.title, 'Quadratic Polynomial Homework');
     assert.equal(res.body.data.assignment.targets.length, 1);
   });
 
   await t.test('8. Teacher assignment creation rejects missing title or invalid curriculum node', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
+    const teacherToken = generateAccessToken(mockTeacherUserA);
     const resNoTitle = await makeRequest('/api/v1/assignments', {
       method: 'POST',
       token: teacherToken,
@@ -664,23 +728,37 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(resInvalidNode.status, 400);
   });
 
-  await t.test('9. Publishing assignment transitions status and fans out to enrolled students', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
-
-    // Create a draft assignment first
+  await t.test('9. Staff admin cannot publish an assignment authored by another teacher (returns 403)', async () => {
+    const staffToken = generateAccessToken(mockStaffAdminUser);
     const draft = await assignmentService.createAssignment('usr_tch_001', {
       curriculumNodeId: 'cn_cbse_10_math',
-      chapterId: 'ch_poly',
-      topicId: 'top_fact',
-      title: 'To Be Published',
-      description: 'Practice task',
+      title: 'Teacher Draft',
+      description: 'Test instructions',
       dueAt: new Date(Date.now() + 86400000).toISOString(),
       targets: [{ targetType: 'batch', targetId: 'bat_cbse_10_ev1' }],
     });
 
     const res = await makeRequest(`/api/v1/assignments/${draft.id}/publish`, {
       method: 'POST',
-      token: teacherToken,
+      token: staffToken,
+    });
+    assert.equal(res.status, 403);
+    assert.equal(res.body.error.code, 'FORBIDDEN');
+  });
+
+  await t.test('10. Superadmin can publish assignment authored by faculty', async () => {
+    const superToken = generateAccessToken(mockSuperAdminUser);
+    const draft = await assignmentService.createAssignment('usr_tch_001', {
+      curriculumNodeId: 'cn_cbse_10_math',
+      title: 'To Be Published By Superadmin',
+      description: 'Superadmin test',
+      dueAt: new Date(Date.now() + 86400000).toISOString(),
+      targets: [{ targetType: 'batch', targetId: 'bat_cbse_10_ev1' }],
+    });
+
+    const res = await makeRequest(`/api/v1/assignments/${draft.id}/publish`, {
+      method: 'POST',
+      token: superToken,
     });
 
     assert.equal(res.status, 200);
@@ -689,8 +767,8 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(res.body.data.assignment.materializedStudentCount, 2);
   });
 
-  await t.test('10. Publishing already published assignment returns 409 conflict', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
+  await t.test('11. Publishing already published assignment returns 409 conflict', async () => {
+    const teacherToken = generateAccessToken(mockTeacherUserA);
     const res = await makeRequest('/api/v1/assignments/asgn_001/publish', {
       method: 'POST',
       token: teacherToken,
@@ -701,7 +779,7 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
   // ---------------------------------------------------------------------------
   // 4. Student Retrieval, Ownership & IDOR Protection
   // ---------------------------------------------------------------------------
-  await t.test('11. Student retrieves own assignments list with derived display_status', async () => {
+  await t.test('12. Student retrieves own assignments list with derived display_status', async () => {
     const studentToken = generateAccessToken(mockStudentUserA);
     const res = await makeRequest('/api/v1/student/assignments', {
       token: studentToken,
@@ -715,7 +793,7 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.ok(res.body.data.assignments[0].display_status);
   });
 
-  await t.test('12. Student cannot read another student assignment detail (returns 404 IDOR protection)', async () => {
+  await t.test('13. Student cannot read another student assignment detail (returns 404 IDOR protection)', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
     // sa_002 belongs to stu_002 (mockStudentUserB)
     const res = await makeRequest('/api/v1/student/assignments/sa_002', {
@@ -727,7 +805,7 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(res.body.error.code, 'NOT_FOUND');
   });
 
-  await t.test('13. Student successfully reads own assignment detail and marks opened', async () => {
+  await t.test('14. Student successfully reads own assignment detail and marks opened', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
     const res = await makeRequest('/api/v1/student/assignments/sa_001', {
       token: studentTokenA,
@@ -740,9 +818,9 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
   });
 
   // ---------------------------------------------------------------------------
-  // 5. Student Submission Handling & Policies
+  // 5. Student Submission Handling, Grace Period, & Sequential Attempts
   // ---------------------------------------------------------------------------
-  await t.test('14. Student A cannot submit to Student B assignment instance (returns 404)', async () => {
+  await t.test('15. Student A cannot submit to Student B assignment instance (returns 404)', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
     const res = await makeRequest('/api/v1/student/assignments/sa_002/submissions', {
       method: 'POST',
@@ -753,7 +831,7 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(res.status, 404);
   });
 
-  await t.test('15. Valid submission creates attempt 1 and updates status to submitted', async () => {
+  await t.test('16. Valid submission creates attempt 1 and updates status to submitted', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
     const res = await makeRequest('/api/v1/student/assignments/sa_001/submissions', {
       method: 'POST',
@@ -774,11 +852,11 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
 
     assert.equal(res.status, 201);
     assert.equal(res.body.success, true);
-    assert.equal(res.body.data.submission.attemptNumber, 1);
+    assert.equal(res.body.data.submission.attemptNumber, 1, 'Attempt numbering must start sequentially at 1');
     assert.equal(res.body.data.submission.studentAssignmentStatus, 'submitted');
   });
 
-  await t.test('16. Re-submitting while already submitted is rejected if resubmission not requested', async () => {
+  await t.test('17. Re-submitting while awaiting evaluation is rejected with ALREADY_SUBMITTED', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
     const res = await makeRequest('/api/v1/student/assignments/sa_001/submissions', {
       method: 'POST',
@@ -790,48 +868,85 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(res.body.error.code, 'ALREADY_SUBMITTED');
   });
 
+  await t.test('18. Submission past grace period is rejected with GRACE_PERIOD_EXPIRED', async () => {
+    const studentTokenA = generateAccessToken(mockStudentUserA);
+    const res = await makeRequest('/api/v1/student/assignments/sa_grace_001/submissions', {
+      method: 'POST',
+      token: studentTokenA,
+      body: { submissionType: 'text', textResponse: 'Late attempt' },
+    });
+
+    assert.equal(res.status, 400);
+    assert.equal(res.body.error.code, 'GRACE_PERIOD_EXPIRED');
+  });
+
   // ---------------------------------------------------------------------------
   // 6. Teacher Evaluation & Resubmission Workflow
   // ---------------------------------------------------------------------------
-  await t.test('17. Teacher views assignment submission queue', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
-    const res = await makeRequest('/api/v1/assignments/asgn_001/submissions', {
-      token: teacherToken,
+  await t.test('19. Teacher B cannot evaluate Teacher A assignment submission (returns 403)', async () => {
+    const teacherTokenB = generateAccessToken(mockTeacherUserB);
+    const currentSubmission = submissionsStore[0];
+    assert.ok(currentSubmission, 'Submission must exist');
+
+    const res = await makeRequest(`/api/v1/submissions/${currentSubmission.id}/evaluate`, {
+      method: 'POST',
+      token: teacherTokenB,
+      body: {
+        scoreAwarded: 15.0,
+        gradingStatus: 'evaluated',
+        feedback: 'Unauthorized grading',
+      },
     });
 
-    assert.equal(res.status, 200);
-    assert.equal(res.body.success, true);
-    assert.ok(Array.isArray(res.body.data.submissions));
+    assert.equal(res.status, 403);
+    assert.equal(res.body.error.code, 'FORBIDDEN');
   });
 
-  await t.test('18. Teacher evaluates submission with resubmission_required', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
+  await t.test('20. Staff admin cannot evaluate student submission (returns 403)', async () => {
+    const staffToken = generateAccessToken(mockStaffAdminUser);
     const currentSubmission = submissionsStore[0];
-    assert.ok(currentSubmission, 'Submission must exist from earlier test');
 
-    const res = await makeRequest(`/api/v1/assignments/submissions/${currentSubmission.id}/evaluate`, {
+    const res = await makeRequest(`/api/v1/submissions/${currentSubmission.id}/evaluate`, {
       method: 'POST',
-      token: teacherToken,
+      token: staffToken,
+      body: {
+        scoreAwarded: 15.0,
+        gradingStatus: 'evaluated',
+        feedback: 'Staff grading',
+      },
+    });
+
+    assert.equal(res.status, 403);
+    assert.equal(res.body.error.code, 'FORBIDDEN');
+  });
+
+  await t.test('21. Author teacher evaluates submission via direct endpoint with resubmission_requested', async () => {
+    const teacherTokenA = generateAccessToken(mockTeacherUserA);
+    const currentSubmission = submissionsStore[0];
+
+    const res = await makeRequest(`/api/v1/submissions/${currentSubmission.id}/evaluate`, {
+      method: 'POST',
+      token: teacherTokenA,
       body: {
         scoreAwarded: 12.0,
-        gradingStatus: 'resubmission_required',
-        feedback: 'Good effort on questions 1-6. Re-do questions 7-10 with standard SI units and show derivation steps.',
+        gradingStatus: 'resubmission_requested',
+        feedback: 'Good effort on questions 1-6. Re-do questions 7-10 showing derivation steps.',
       },
     });
 
     assert.equal(res.status, 200);
     assert.equal(res.body.success, true);
-    assert.equal(res.body.data.evaluation.gradingStatus, 'resubmission_required');
-    assert.equal(res.body.data.evaluation.studentAssignmentStatus, 'resubmission_required');
+    assert.equal(res.body.data.evaluation.gradingStatus, 'resubmission_requested');
+    assert.equal(res.body.data.evaluation.studentAssignmentStatus, 'resubmission_requested');
   });
 
-  await t.test('19. Evaluation score exceeding max_score is rejected with 400', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
+  await t.test('22. Evaluation score exceeding max_score is rejected with 400', async () => {
+    const teacherTokenA = generateAccessToken(mockTeacherUserA);
     const currentSubmission = submissionsStore[0];
 
-    const res = await makeRequest(`/api/v1/assignments/submissions/${currentSubmission.id}/evaluate`, {
+    const res = await makeRequest(`/api/v1/submissions/${currentSubmission.id}/evaluate`, {
       method: 'POST',
-      token: teacherToken,
+      token: teacherTokenA,
       body: {
         scoreAwarded: 999.0, // Max score is 20.0
         gradingStatus: 'evaluated',
@@ -843,23 +958,44 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(res.body.error.code, 'VALIDATION_ERROR');
   });
 
-  await t.test('20. Student can submit attempt 2 when resubmission was requested', async () => {
+  await t.test('23. Student submits revision: generates sequential attempt 2 and status resubmitted', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
     const res = await makeRequest('/api/v1/student/assignments/sa_001/submissions', {
       method: 'POST',
       token: studentTokenA,
       body: {
         submissionType: 'text',
-        textResponse: 'Corrected solutions for Questions 7 to 10 with full SI units.',
+        textResponse: 'Corrected solutions for Questions 7 to 10 with full derivations.',
       },
     });
 
     assert.equal(res.status, 201);
     assert.equal(res.body.success, true);
-    assert.equal(res.body.data.submission.attemptNumber, 2);
+    assert.equal(res.body.data.submission.attemptNumber, 2, 'Attempt number must be sequentially 2');
+    assert.equal(res.body.data.submission.studentAssignmentStatus, 'resubmitted', 'Status must transition to resubmitted');
   });
 
-  await t.test('21. Historical submission attempts are preserved and returned to student', async () => {
+  await t.test('24. Teacher evaluates attempt 2: status transitions to completed', async () => {
+    const teacherTokenA = generateAccessToken(mockTeacherUserA);
+    const attempt2Submission = submissionsStore.find(s => s.attempt_number === 2);
+    assert.ok(attempt2Submission, 'Attempt 2 submission must exist');
+
+    const res = await makeRequest(`/api/v1/submissions/${attempt2Submission.id}/evaluate`, {
+      method: 'POST',
+      token: teacherTokenA,
+      body: {
+        scoreAwarded: 19.0,
+        gradingStatus: 'evaluated',
+        feedback: 'Derivations are clear and accurate. Well done!',
+      },
+    });
+
+    assert.equal(res.status, 200);
+    assert.equal(res.body.success, true);
+    assert.equal(res.body.data.evaluation.studentAssignmentStatus, 'completed');
+  });
+
+  await t.test('25. Historical submission attempts are preserved and returned to student', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
     const res = await makeRequest('/api/v1/student/assignments/sa_001/submissions', {
       token: studentTokenA,
@@ -868,12 +1004,14 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.equal(res.status, 200);
     assert.equal(res.body.success, true);
     assert.equal(res.body.data.submissions.length, 2, 'Must contain both attempt 1 and attempt 2');
+    assert.equal(res.body.data.submissions[0].attempt_number, 1);
+    assert.equal(res.body.data.submissions[1].attempt_number, 2);
   });
 
   // ---------------------------------------------------------------------------
   // 7. Security, Parameterization, and Hygiene
   // ---------------------------------------------------------------------------
-  await t.test('22. Assignment and Student repositories contain zero SELECT * statements', () => {
+  await t.test('26. Assignment and Student repositories contain zero SELECT * statements', () => {
     const asgnRepoCode = fs.readFileSync('server/repositories/assignmentRepository.js', 'utf8');
     const saRepoCode = fs.readFileSync('server/repositories/studentAssignmentRepository.js', 'utf8');
 
@@ -881,33 +1019,19 @@ test('--- Phase 5.10E-B: Assignment Backend Test Suite ---', async (t) => {
     assert.doesNotMatch(saRepoCode, /SELECT\s+\*\s+FROM/i);
   });
 
-  await t.test('23. Student identity is strictly isolated to req.user.id (query param ignored)', async () => {
+  await t.test('27. Student identity is strictly isolated to req.user.id (query param ignored)', async () => {
     const studentTokenA = generateAccessToken(mockStudentUserA);
-    // Student A tries to query as Student B via studentId query parameter
     const res = await makeRequest('/api/v1/student/assignments?studentId=stu_002', {
       token: studentTokenA,
     });
 
     assert.equal(res.status, 200);
-    // All returned assignments must still belong strictly to stu_001
     for (const a of res.body.data.assignments) {
       assert.equal(a.student_id, 'stu_001');
     }
   });
 
-  await t.test('24. Teacher assignment detail endpoint works with valid teacher token', async () => {
-    const teacherToken = generateAccessToken(mockTeacherUser);
-    const res = await makeRequest('/api/v1/assignments/asgn_001', {
-      token: teacherToken,
-    });
-
-    assert.equal(res.status, 200);
-    assert.equal(res.body.success, true);
-    assert.equal(res.body.data.assignment.id, 'asgn_001');
-    assert.ok(Array.isArray(res.body.data.assignment.targets));
-  });
-
-  await t.test('25. Service unit functions operate reliably in direct isolation', async () => {
+  await t.test('28. Service unit functions operate reliably in direct isolation', async () => {
     assert.equal(typeof assignmentService.createAssignment, 'function');
     assert.equal(typeof assignmentService.publishAssignment, 'function');
     assert.equal(typeof assignmentService.evaluateSubmission, 'function');

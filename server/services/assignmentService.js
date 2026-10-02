@@ -1,12 +1,14 @@
 import crypto from 'crypto';
 import assignmentRepo from '../repositories/assignmentRepository.js';
 import studentAssignmentRepo from '../repositories/studentAssignmentRepository.js';
+import { findAdminByUserId } from '../repositories/adminRepository.js';
 
 const ALLOWED_ASSIGNMENT_TYPES = ['homework', 'worksheet', 'practice_set', 'project', 'revision'];
-const ALLOWED_LATE_POLICIES = ['reject', 'allow_flagged'];
+const ALLOWED_LATE_POLICIES = ['reject_late', 'grace_period', 'allow_late', 'reject', 'allow_flagged'];
 const ALLOWED_RESUBMISSION_POLICIES = ['none', 'single', 'multiple'];
 const ALLOWED_TARGET_TYPES = ['batch', 'class', 'student'];
-const ALLOWED_GRADING_STATUSES = ['evaluated', 'resubmission_required', 'needs_improvement'];
+const ALLOWED_GRADING_STATUSES = ['evaluated', 'resubmission_requested', 'resubmission_required', 'needs_improvement'];
+const ALLOWED_ASSIGNMENT_STATUSES = ['draft', 'published', 'closed', 'archived'];
 
 /**
  * Creates a new assignment master definition with recipient targets in 'draft' status.
@@ -94,13 +96,15 @@ export async function createAssignment(userId, data) {
   }
 
   // 5. Validate policies
-  const latePolicy = data.latePolicy ? String(data.latePolicy).trim() : 'reject';
+  let latePolicy = data.latePolicy ? String(data.latePolicy).trim() : 'reject_late';
   if (!ALLOWED_LATE_POLICIES.includes(latePolicy)) {
     const error = new Error(`Invalid latePolicy. Allowed: ${ALLOWED_LATE_POLICIES.join(', ')}.`);
     error.statusCode = 400;
     error.code = 'VALIDATION_ERROR';
     throw error;
   }
+  if (latePolicy === 'reject') latePolicy = 'reject_late';
+  if (latePolicy === 'allow_flagged') latePolicy = 'allow_late';
 
   const resubmissionPolicy = data.resubmissionPolicy ? String(data.resubmissionPolicy).trim() : 'none';
   if (!ALLOWED_RESUBMISSION_POLICIES.includes(resubmissionPolicy)) {
@@ -231,7 +235,15 @@ export async function publishAssignment(userId, userRole, assignmentId) {
     throw error;
   }
 
-  if (userRole !== 'admin' && assignment.created_by !== userId) {
+  if (userRole === 'admin') {
+    const adminProfile = await findAdminByUserId(userId);
+    if (adminProfile?.access_level !== 'superadmin' && assignment.created_by !== userId) {
+      const error = new Error('Staff admin role cannot publish assignments authored by other faculty without superadmin privileges.');
+      error.statusCode = 403;
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+  } else if (assignment.created_by !== userId) {
     const error = new Error('Unauthorized to publish this assignment.');
     error.statusCode = 403;
     error.code = 'FORBIDDEN';
@@ -275,7 +287,12 @@ export async function publishAssignment(userId, userRole, assignmentId) {
  */
 export async function listAssignments(userId, userRole, filters = {}, pagination = { page: 1, pageSize: 20 }) {
   const queryFilters = { ...filters };
-  if (userRole !== 'admin') {
+  if (userRole === 'admin') {
+    const adminProfile = await findAdminByUserId(userId);
+    if (adminProfile?.access_level !== 'superadmin') {
+      queryFilters.createdBy = userId;
+    }
+  } else {
     queryFilters.createdBy = userId;
   }
 
@@ -304,7 +321,15 @@ export async function getAssignmentDetail(userId, userRole, assignmentId) {
   const assignment = await assignmentRepo.getAssignmentById(assignmentId);
   if (!assignment) return null;
 
-  if (userRole !== 'admin' && assignment.created_by !== userId) {
+  if (userRole === 'admin') {
+    const adminProfile = await findAdminByUserId(userId);
+    if (adminProfile?.access_level !== 'superadmin' && assignment.created_by !== userId) {
+      const error = new Error('Access denied to requested assignment.');
+      error.statusCode = 403;
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+  } else if (assignment.created_by !== userId) {
     const error = new Error('Access denied to requested assignment.');
     error.statusCode = 403;
     error.code = 'FORBIDDEN';
@@ -330,7 +355,15 @@ export async function listAssignmentSubmissions(userId, userRole, assignmentId, 
     throw error;
   }
 
-  if (userRole !== 'admin' && assignment.created_by !== userId) {
+  if (userRole === 'admin') {
+    const adminProfile = await findAdminByUserId(userId);
+    if (adminProfile?.access_level !== 'superadmin' && assignment.created_by !== userId) {
+      const error = new Error('Access denied to assignment submissions.');
+      error.statusCode = 403;
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+  } else if (assignment.created_by !== userId) {
     const error = new Error('Access denied to assignment submissions.');
     error.statusCode = 403;
     error.code = 'FORBIDDEN';
@@ -357,6 +390,7 @@ export async function listAssignmentSubmissions(userId, userRole, assignmentId, 
 
 /**
  * Evaluates a student submission.
+ * Enforces traversal: submission -> student_assignment -> assignment -> authorized evaluator.
  */
 export async function evaluateSubmission(userId, userRole, submissionId, evalData) {
   const submission = await studentAssignmentRepo.getSubmissionById(submissionId);
@@ -367,17 +401,41 @@ export async function evaluateSubmission(userId, userRole, submissionId, evalDat
     throw error;
   }
 
-  // Resolve teacher record
-  let teacherId = null;
-  const teacher = await studentAssignmentRepo.getTeacherByUserId(userId);
-  if (teacher) {
-    teacherId = teacher.id;
-  } else if (userRole === 'admin') {
-    // If admin is evaluating, ensure an evaluator is linked or use first available teacher ID as extension fallback
-    teacherId = userId; // or fallback
+  const assignment = await assignmentRepo.getAssignmentById(submission.assignment_id);
+  if (!assignment) {
+    const error = new Error('Associated assignment not found.');
+    error.statusCode = 404;
+    error.code = 'NOT_FOUND';
+    throw error;
   }
 
-  if (!teacherId && userRole !== 'admin') {
+  // Resolve teacher / evaluator record and check role permissions
+  let teacherId = null;
+  if (userRole === 'admin') {
+    const adminProfile = await findAdminByUserId(userId);
+    if (adminProfile?.access_level !== 'superadmin' && assignment.created_by !== userId) {
+      const error = new Error('Staff admin access cannot evaluate submissions authored by other faculty without superadmin privileges.');
+      error.statusCode = 403;
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+    teacherId = userId;
+  } else if (userRole === 'teacher') {
+    const teacher = await studentAssignmentRepo.getTeacherByUserId(userId);
+    if (!teacher) {
+      const error = new Error('Teacher record not found.');
+      error.statusCode = 403;
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+    teacherId = teacher.id;
+    if (assignment.created_by !== userId) {
+      const error = new Error('Unauthorized to evaluate submissions for an assignment authored by another teacher.');
+      error.statusCode = 403;
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+  } else {
     const error = new Error('Only faculty can evaluate submissions.');
     error.statusCode = 403;
     error.code = 'FORBIDDEN';
@@ -421,6 +479,8 @@ export async function evaluateSubmission(userId, userRole, submissionId, evalDat
     throw error;
   }
 
+  const normalizedGradingStatus = gradingStatus === 'resubmission_required' ? 'resubmission_requested' : gradingStatus;
+
   // 4. Save evaluation
   const evaluationId = crypto.randomUUID();
   const evaluationRecord = {
@@ -428,7 +488,7 @@ export async function evaluateSubmission(userId, userRole, submissionId, evalDat
     submissionId,
     evaluatedBy: teacherId,
     scoreAwarded,
-    gradingStatus,
+    gradingStatus: normalizedGradingStatus,
     feedback,
     evaluatedAt: new Date(),
   };
@@ -436,8 +496,8 @@ export async function evaluateSubmission(userId, userRole, submissionId, evalDat
   await studentAssignmentRepo.createOrUpdateEvaluation(evaluationRecord);
 
   // 5. Update student assignment status
-  const isCompleted = gradingStatus === 'evaluated';
-  const newStatus = gradingStatus === 'resubmission_required' ? 'resubmission_required' : 'evaluated';
+  const isCompleted = normalizedGradingStatus === 'evaluated';
+  const newStatus = normalizedGradingStatus === 'resubmission_requested' ? 'resubmission_requested' : 'completed';
   await studentAssignmentRepo.updateStudentAssignmentStatus(
     submission.student_assignment_id,
     newStatus,

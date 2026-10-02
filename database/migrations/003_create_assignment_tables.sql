@@ -9,6 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- -----------------------------------------------------------------------------
 -- 1. assignments
+-- Lifecycle: DRAFT -> PUBLISHED -> CLOSED -> ARCHIVED
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS assignments (
     id VARCHAR(36) NOT NULL,
@@ -22,10 +23,10 @@ CREATE TABLE IF NOT EXISTS assignments (
     available_from TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Instant assignment becomes actionable',
     due_at TIMESTAMP NOT NULL COMMENT 'Target completion deadline',
     close_at TIMESTAMP NULL COMMENT 'Hard cut-off timestamp; defaults to due_at if NULL',
-    late_policy ENUM('reject', 'allow_flagged') NOT NULL DEFAULT 'reject',
+    late_policy ENUM('reject_late', 'grace_period', 'allow_late') NOT NULL DEFAULT 'reject_late',
     resubmission_policy ENUM('none', 'single', 'multiple') NOT NULL DEFAULT 'none',
     max_resubmissions TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Max resubmission cycles allowed',
-    status ENUM('draft', 'published', 'cancelled', 'archived') NOT NULL DEFAULT 'draft',
+    status ENUM('draft', 'published', 'closed', 'archived') NOT NULL DEFAULT 'draft',
     created_by VARCHAR(36) NOT NULL COMMENT 'FK -> users.id (Teacher/Admin who authored the assignment)',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -65,12 +66,13 @@ CREATE TABLE IF NOT EXISTS assignment_targets (
 
 -- -----------------------------------------------------------------------------
 -- 3. student_assignments
+-- Lifecycle: ASSIGNED -> IN_PROGRESS -> SUBMITTED -> EVALUATED -> RESUBMISSION_REQUESTED -> RESUBMITTED -> COMPLETED
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS student_assignments (
     id VARCHAR(36) NOT NULL,
     assignment_id VARCHAR(36) NOT NULL COMMENT 'FK -> assignments.id',
     student_id VARCHAR(36) NOT NULL COMMENT 'FK -> students.id (locked identity table)',
-    status ENUM('assigned', 'in_progress', 'submitted', 'evaluated', 'resubmission_required') NOT NULL DEFAULT 'assigned',
+    status ENUM('assigned', 'in_progress', 'submitted', 'evaluated', 'resubmission_requested', 'resubmitted', 'completed') NOT NULL DEFAULT 'assigned',
     first_opened_at TIMESTAMP NULL COMMENT 'Audit when student first viewed instructions',
     current_attempt TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Active submission attempt number',
     final_score DECIMAL(5,2) NULL COMMENT 'Latest evaluated score',
@@ -89,6 +91,7 @@ CREATE TABLE IF NOT EXISTS student_assignments (
 
 -- -----------------------------------------------------------------------------
 -- 4. submissions
+-- Attempt numbering generated sequentially (1, 2, ...) by service layer
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS submissions (
     id VARCHAR(36) NOT NULL,
@@ -131,7 +134,7 @@ CREATE TABLE IF NOT EXISTS evaluations (
     submission_id VARCHAR(36) NOT NULL COMMENT 'FK -> submissions.id',
     evaluated_by VARCHAR(36) NOT NULL COMMENT 'FK -> teachers.id (Evaluating faculty)',
     score_awarded DECIMAL(5,2) NULL COMMENT 'Marks awarded; NULL for non-graded review',
-    grading_status ENUM('evaluated', 'resubmission_required', 'needs_improvement') NOT NULL DEFAULT 'evaluated',
+    grading_status ENUM('evaluated', 'resubmission_requested', 'needs_improvement') NOT NULL DEFAULT 'evaluated',
     feedback TEXT NOT NULL COMMENT 'Pedagogical feedback, corrections, and revision instructions',
     evaluated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

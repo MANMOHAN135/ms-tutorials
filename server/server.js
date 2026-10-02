@@ -11,6 +11,9 @@ import adminRoutes from './routes/adminRoutes.js';
 import academicReferenceRoutes from './routes/academicReferenceRoutes.js';
 import curriculumRoutes from './routes/curriculumRoutes.js';
 import assignmentRoutes from './routes/assignmentRoutes.js';
+import { evaluateSubmission } from './controllers/assignmentController.js';
+import { requireAuth } from './middleware/authMiddleware.js';
+import { requireRole } from './middleware/roleMiddleware.js';
 
 const app = express();
 
@@ -39,6 +42,7 @@ app.use('/api/v1/curriculum', curriculumRoutes);
 
 // Protected Assignment & Evaluation Routes (Phase 5.10E-B)
 app.use('/api/v1/assignments', assignmentRoutes);
+app.post('/api/v1/submissions/:submissionId/evaluate', requireAuth, requireRole('teacher', 'admin'), evaluateSubmission);
 
 // Base Health Check Route (extended for database connectivity check)
 app.get('/api/health', async (req, res) => {

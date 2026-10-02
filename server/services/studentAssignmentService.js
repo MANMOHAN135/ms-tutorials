@@ -116,19 +116,32 @@ export async function submitAssignment(userId, studentAssignmentId, submissionDa
   const isLate = now > dueAt;
 
   if (isLate) {
-    if (assignment.late_policy === 'reject') {
+    const latePolicy = assignment.late_policy || 'reject_late';
+    if (latePolicy === 'reject_late' || latePolicy === 'reject') {
       const error = new Error('Assignment deadline has passed. Late submissions are not accepted.');
       error.statusCode = 400;
       error.code = 'DEADLINE_PASSED';
       throw error;
     }
-    if (assignment.close_at) {
-      const closeAt = new Date(assignment.close_at);
-      if (now > closeAt) {
-        const error = new Error('Assignment submission cut-off window has closed.');
-        error.statusCode = 400;
-        error.code = 'SUBMISSION_CLOSED';
-        throw error;
+    if (latePolicy === 'grace_period') {
+      if (assignment.close_at) {
+        const closeAt = new Date(assignment.close_at);
+        if (now > closeAt) {
+          const error = new Error('Grace period has expired. Submissions are now closed.');
+          error.statusCode = 400;
+          error.code = 'GRACE_PERIOD_EXPIRED';
+          throw error;
+        }
+      }
+    } else if (latePolicy === 'allow_late' || latePolicy === 'allow_flagged') {
+      if (assignment.close_at) {
+        const closeAt = new Date(assignment.close_at);
+        if (now > closeAt) {
+          const error = new Error('Assignment submission cut-off window has closed.');
+          error.statusCode = 400;
+          error.code = 'SUBMISSION_CLOSED';
+          throw error;
+        }
       }
     }
   }
@@ -138,7 +151,7 @@ export async function submitAssignment(userId, studentAssignmentId, submissionDa
   const attemptCount = existingSubmissions.length;
 
   if (attemptCount > 0) {
-    if (assignment.status !== 'resubmission_required') {
+    if (assignment.status !== 'resubmission_requested' && assignment.status !== 'resubmission_required') {
       const error = new Error('Assignment has already been submitted and is awaiting evaluation or completed.');
       error.statusCode = 400;
       error.code = 'ALREADY_SUBMITTED';
@@ -193,7 +206,7 @@ export async function submitAssignment(userId, studentAssignmentId, submissionDa
     throw error;
   }
 
-  // 4. Create submission attempt
+  // 4. Create submission attempt (monotonically sequential attempt numbering: 1 -> 2 -> 3 ...)
   const submissionId = crypto.randomUUID();
   const attemptNumber = attemptCount + 1;
 
@@ -223,10 +236,11 @@ export async function submitAssignment(userId, studentAssignmentId, submissionDa
     await studentAssignmentRepo.createSubmissionAttachments(attachmentRecords);
   }
 
-  // 6. Update student_assignments status
+  // 6. Update student_assignments status (submitted on 1st attempt, resubmitted on subsequent attempts)
+  const nextStatus = attemptNumber > 1 ? 'resubmitted' : 'submitted';
   await studentAssignmentRepo.updateStudentAssignmentStatus(
     studentAssignmentId,
-    'submitted',
+    nextStatus,
     attemptNumber,
     null,
     false
@@ -234,7 +248,7 @@ export async function submitAssignment(userId, studentAssignmentId, submissionDa
 
   return {
     ...submissionRecord,
-    studentAssignmentStatus: 'submitted',
+    studentAssignmentStatus: nextStatus,
   };
 }
 
