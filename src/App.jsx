@@ -15,6 +15,7 @@ import Textarea from './components/Textarea.jsx';
 import Badge from './components/Badge.jsx';
 import EmptyState from './components/EmptyState.jsx';
 import StudentPortalLayout from './layouts/StudentPortalLayout.jsx';
+import TeacherPortalLayout from './layouts/TeacherPortalLayout.jsx';
 import StudentLogin from './student/pages/StudentLogin.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { Sparkles, CheckCircle2 } from 'lucide-react';
@@ -170,6 +171,16 @@ function AppContent() {
   if (currentPath.startsWith('/student')) {
     return (
       <StudentPortalLayout
+        currentPath={currentPath}
+        onNavigate={handleNavigate}
+      />
+    );
+  }
+
+  // Route boundary: Isolate teacher portal views from public website
+  if (currentPath.startsWith('/teacher')) {
+    return (
+      <TeacherPortalLayout
         currentPath={currentPath}
         onNavigate={handleNavigate}
       />

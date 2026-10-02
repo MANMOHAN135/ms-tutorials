@@ -4,6 +4,7 @@ import App from './App.jsx';
 import './styles/global.css';
 import './styles/responsive.css';
 import './styles/student-portal.css';
+import './styles/teacher-portal.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

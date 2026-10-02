@@ -1,0 +1,820 @@
+/* ==========================================================================
+   MS Tutorials — Teacher Portal & Assignment Management Stylesheet (Phase 5.10E-D)
+   Namespaced under .mst-tp- to prevent any leakage into public marketing styles.
+   ========================================================================== */
+
+@import './variables.css';
+
+/* --------------------------------------------------------------------------
+   1. Skip Navigation Link (Accessibility)
+   -------------------------------------------------------------------------- */
+.mst-tp-skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-4);
+  z-index: var(--z-toast);
+  background-color: var(--primary);
+  color: var(--white);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transition: top var(--transition-fast);
+}
+
+.mst-tp-skip-link:focus-visible {
+  top: var(--space-4);
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* --------------------------------------------------------------------------
+   2. Master Shell Layout
+   -------------------------------------------------------------------------- */
+.mst-tp-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-subtle);
+  color: var(--text-main);
+  font-family: var(--font-body);
+}
+
+.mst-tp-main-content {
+  flex: 1;
+  padding: var(--space-6) var(--space-4) var(--space-12);
+}
+
+.mst-tp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   3. Teacher Header
+   -------------------------------------------------------------------------- */
+.mst-tp-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.mst-tp-header__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.mst-tp-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mst-tp-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: inherit;
+}
+
+.mst-tp-header__logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+.mst-tp-header__brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.mst-tp-header__brand-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.mst-tp-header__brand-sub {
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.mst-tp-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mst-tp-header__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mst-tp-header__nav-link:hover {
+  color: var(--text-main);
+  background-color: var(--bg-subtle);
+}
+
+.mst-tp-header__nav-link.active {
+  color: var(--primary);
+  background-color: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.mst-tp-header__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mst-tp-header__user-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-full);
+}
+
+.mst-tp-header__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.mst-tp-header__user-meta {
+  display: flex;
+  flex-direction: column;
+  padding-right: var(--space-2);
+}
+
+.mst-tp-header__user-name {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.mst-tp-header__user-role {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   4. Page Header & Metrics Cards
+   -------------------------------------------------------------------------- */
+.mst-tp-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.mst-tp-page-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-main);
+  margin: 0 0 var(--space-1);
+}
+
+.mst-tp-page-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.mst-tp-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.mst-tp-back-link:hover {
+  text-decoration: underline;
+}
+
+.mst-tp-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.mst-tp-metric-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.mst-tp-metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mst-tp-metric-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.mst-tp-metric-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.mst-tp-metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Filter Controls & Search
+   -------------------------------------------------------------------------- */
+.mst-tp-filter-card {
+  padding: var(--space-4);
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  margin-bottom: var(--space-6);
+}
+
+.mst-tp-filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.mst-tp-search-col {
+  flex: 1;
+  min-width: 240px;
+}
+
+.mst-tp-filter-col {
+  min-width: 180px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Assignment Cards & Feed
+   -------------------------------------------------------------------------- */
+.mst-tp-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.mst-tp-assignment-card {
+  padding: var(--space-5);
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mst-tp-assignment-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.mst-tp-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.mst-tp-card-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.mst-tp-card-meta-tags {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.mst-tp-tag-pill {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  background-color: var(--bg-subtle);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.mst-tp-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-main);
+  margin: var(--space-1) 0 0;
+}
+
+.mst-tp-card-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background-color: rgba(59, 130, 246, 0.08);
+  color: var(--primary);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.mst-tp-card-details {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mst-tp-detail-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.mst-tp-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   7. Form Layouts & Authoring
+   -------------------------------------------------------------------------- */
+.mst-tp-form-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.mst-tp-form-card {
+  padding: var(--space-6);
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.mst-tp-section-heading {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-main);
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.mst-tp-section-sub {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin: -var(--space-2) 0 var(--space-4);
+}
+
+.mst-tp-section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.mst-tp-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.mst-tp-form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.mst-tp-form-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mst-tp-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-main);
+}
+
+.mst-tp-required {
+  color: var(--destructive);
+  margin-left: 2px;
+}
+
+.mst-tp-targets-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mst-tp-target-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mst-tp-target-type-col {
+  width: 200px;
+}
+
+.mst-tp-target-id-col {
+  flex: 1;
+}
+
+.mst-tp-form-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.mst-tp-submit-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* --------------------------------------------------------------------------
+   8. Detail View Layout & Key-Value Lists
+   -------------------------------------------------------------------------- */
+.mst-tp-detail-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+.mst-tp-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.mst-tp-detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.mst-tp-instruction-content {
+  font-size: var(--font-size-sm);
+  color: var(--text-main);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.mst-tp-kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mst-tp-kv-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.mst-tp-kv-key {
+  color: var(--text-muted);
+}
+
+.mst-tp-kv-val {
+  color: var(--text-main);
+  font-weight: var(--font-weight-medium);
+  text-align: right;
+}
+
+/* --------------------------------------------------------------------------
+   9. Submissions Queue & Tables
+   -------------------------------------------------------------------------- */
+.mst-tp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.mst-tp-table th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-subtle);
+}
+
+.mst-tp-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.mst-tp-table tr:hover td {
+  background-color: rgba(59, 130, 246, 0.02);
+}
+
+.mst-tp-student-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.mst-tp-student-name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-main);
+}
+
+.mst-tp-student-adm {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.mst-tp-attempt-pill {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 2px 6px;
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.mst-tp-mode-label {
+  text-transform: capitalize;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.mst-tp-date-col {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mst-tp-score-text {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-main);
+}
+
+.mst-tp-feedback-bubble {
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--text-main);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* --------------------------------------------------------------------------
+   10. Evaluation Workbench Form
+   -------------------------------------------------------------------------- */
+.mst-tp-eval-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* --------------------------------------------------------------------------
+   11. Banners, Modals & Status Displays
+   -------------------------------------------------------------------------- */
+.mst-tp-error-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--destructive);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-4);
+}
+
+.mst-tp-success-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background-color: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--success);
+  font-size: var(--font-size-sm);
+}
+
+.mst-tp-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: var(--space-4);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.mst-tp-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.mst-tp-page-indicator {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   12. Responsive Breakpoints
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .mst-tp-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .mst-tp-header__inner {
+    height: auto;
+    padding: var(--space-3) var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .mst-tp-header__nav {
+    order: 3;
+    width: 100%;
+    margin-top: var(--space-2);
+    justify-content: flex-start;
+  }
+
+  .mst-tp-header__logout-label {
+    display: none;
+  }
+
+  .mst-tp-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mst-tp-form-row {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .mst-tp-target-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mst-tp-target-type-col {
+    width: 100%;
+  }
+
+  .mst-tp-form-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mst-tp-submit-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .mst-tp-submit-group button {
+    width: 100%;
+  }
+
+  .mst-tp-table th:nth-child(3),
+  .mst-tp-table td:nth-child(3),
+  .mst-tp-table th:nth-child(4),
+  .mst-tp-table td:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .mst-tp-header__brand-sub {
+    display: none;
+  }
+
+  .mst-tp-header__badge {
+    display: none;
+  }
+
+  .mst-tp-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mst-tp-search-col,
+  .mst-tp-filter-col {
+    width: 100%;
+  }
+
+  .mst-tp-card-header {
+    flex-direction: column;
+  }
+
+  .mst-tp-card-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mst-tp-card-actions button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mst-tp-assignment-card,
+  .mst-tp-header__nav-link,
+  .mst-tp-skip-link {
+    transition: none !important;
+  }
+}
