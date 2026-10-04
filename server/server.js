@@ -1,4 +1,6 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { config } from './config/environment.js';
@@ -15,15 +17,22 @@ import { evaluateSubmission } from './controllers/assignmentController.js';
 import { requireAuth } from './middleware/authMiddleware.js';
 import { requireRole } from './middleware/roleMiddleware.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distPath = path.join(__dirname, '..', 'dist');
+
 const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  origin: process.env.CLIENT_ORIGIN || true,
   credentials: true,
 }));
 app.use(cookieParser());
 app.use(express.json());
+
+// Serve static frontend files from Vite build
+app.use(express.static(distPath));
 
 // Authentication Routes (Phase 5.2)
 app.use('/api/auth', authRoutes);
@@ -44,7 +53,7 @@ app.use('/api/v1/curriculum', curriculumRoutes);
 app.use('/api/v1/assignments', assignmentRoutes);
 app.post('/api/v1/submissions/:submissionId/evaluate', requireAuth, requireRole('teacher', 'admin'), evaluateSubmission);
 
-// Base Health Check Route (extended for database connectivity check)
+// Base Health Check Route
 app.get('/api/health', async (req, res) => {
   const dbHealth = await checkDatabaseHealth();
 
@@ -60,26 +69,30 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
-// 404 handler for unmatched routes
-app.use((req, res) => {
+// React SPA fallback: any non-API route goes to index.html
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
+// 404 handler for unmatched API routes
+app.use('/api/*', (req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
 
-// Centralized error handling middleware (sanitized, zero credential leak)
+// Centralized error handling middleware
 app.use((err, req, res, next) => {
   console.error('Unhandled server error:', err.message);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server only if executed directly as the process entrypoint
-const isMainModule = process.argv[1] && (
-  process.argv[1].endsWith('server.js') ||
-  process.argv[1].endsWith('server')
-);
+const PORT = process.env.PORT || config.port || 3000;
 
-if (isMainModule && process.env.NODE_ENV !== 'test') {
-  app.listen(config.port, () => {
-    console.log(`MS Tutorials server running on http://localhost:${config.port}`);
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`MS Tutorials server running on port ${PORT}`);
   });
 }
 
